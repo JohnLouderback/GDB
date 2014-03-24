@@ -45,6 +45,7 @@ All User Options are entirely optional.
 - [ ] Add simple templating functionality
 - [ ] Add ability to add data parsing functions
 - [ ] Add more and better examples
+- [ ] Create pure JavaScript version if there is an interest
 - [x] Upload initial beta version
 
 ##Changelog
