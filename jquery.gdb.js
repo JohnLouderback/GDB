@@ -96,10 +96,14 @@ $(function(){//Wait for jQuery to be ready
                             var elementSelector="["+options.dataBindToAttr+"='"+objectLocationString+key+"']";
                             var newValue=change.object[change.name];
 
-                            if(!options.bindAsTextOnly)//if we're not binding as text only
-                                $(elementSelector).html(newValue);//set the html of the bound element
-                            else //Otherwise...
-                                $(elementSelector).text(newValue);//set the text of the bound element
+                            if($(elementSelector).is('input,select,textarea')) //If element is a form element
+                                $(elementSelector).val(newValue);//set the value of the bound element
+                            else{
+                                if(!options.bindAsTextOnly)//if we're not binding as text only
+                                    $(elementSelector).html(newValue);//set the html of the bound element
+                                else //Otherwise...
+                                    $(elementSelector).text(newValue);//set the text of the bound element
+                            }
 
                             if(options.debugLogging)
                                 console.log(objectLocationString+key+" is now equal to "+newValue);
