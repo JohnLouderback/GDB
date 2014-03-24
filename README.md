@@ -31,11 +31,21 @@ The second parameter is an object containing user specified options.
 Using the example above the element bound to the model will update the model in realtime as the data in the element changes. Vice-versa is also true. When data in the data model is changed, the element will update accordingly automatically.
 
 ##User Options
-All User Options are entirely optional.
 Property | Type | Default Value | Description
 ---------|------|---------------|------------
 rootElementSelectorString | string | ``"body"`` | This property specifies what the root element is for whose children are monitored for changes and should be updated in realtime. Default is the body element, but specifying another element may be useful if using multiple instances of GDB for multiple templates.
-realtime | boolean | ``true`` | This property specifies whether or not to update the model with changes as the user makes them. Such as: if the user is typing into an input, textarea, or contenteditable field the model will be updated with everything key press and alteration. If this value is set to ``false`` then the model will only be update when the bound field loses focus.
+realtime | boolean | ``true`` | This property specifies whether or not to update the model with changes as the user makes them. Such as: if the user is typing into an input, textarea, or contenteditable field the model will be updated with everything key press and alteration. If this value is set to ``false`` then the model will only be updated when the bound field loses focus.
 dataBindToAttr | string | ``"data-bindto"`` | This property specifies the name of the attribute which contains the mapping to the location in the model to which a given element's data is bound. Changing this property's value may be useful in the event that there is a conflict with using the ``data-bindto`` attribute.
 bindAsTextOnly | boolean | ``false`` | This property specifies whether to use content of contenteditable elements as HTML or get the plain text.
 debugLogging | boolean | ``false`` | When is property is set to ``true``, changes made to the model or view are recorded in the console via the console.log() function.
+
+All User Options are entirely optional.
+
+##TODO
+- [ ] Add simple templating functionality
+- [ ] Add ability to add data parsing functions
+- [ ] Add more and better examples
+- [x] Upload initial beta version
+
+##Changelog
+v0.8 - 3/23/2014 - Uploaded initial version.
