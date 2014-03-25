@@ -1,0 +1,52 @@
+<!doctype html>
+<html>
+<head>
+    <title>Generic Data Binder Simplest Example</title>
+    <link rel="stylesheet" href="http://bootswatch.com/slate/bootstrap.min.css">
+    <link rel="stylesheet" href="http://yandex.st/highlightjs/8.0/styles/pojoaque.min.css">
+    <style>
+        pre{background-color: #7a8288;
+            border: 1px solid #7a8288;}
+    </style>
+    <script src="http://yandex.st/highlightjs/8.0/highlight.min.js"></script>
+</head>
+<body style="margin:20px;">
+
+    <div class="col-md-6">
+        <h2>GDB Simplest Example</h2>
+        <div id="htmlDiv">
+            <div data-bindto="teacher.name" style="padding:10px;" class="img-rounded bg-primary" contenteditable="true">Ms. Trunchbull</div>
+        </div>
+        Edit the text above!
+    </div>
+
+    <div class="col-md-6">
+        <h2>Model Data Structure</h2>
+        <pre><code id="model"></code></pre>
+        <h3>HTML</h3>
+        <pre><code id="htmlCode"></code></pre>
+        <h3>JavaScript</h3>
+        <pre><code id="jsCode">var model={name: "Ms. Trunchbull"};
+GDB({teacher: model});</code></pre>
+    </div>
+
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+<script src="../jquery.gdb.min.js"></script>
+<script>
+    hljs.initHighlightingOnLoad();//Just for the demo's syntax highlighting
+    $(function(){
+        var model={name: "Ms. Trunchbull"};
+        GDB({teacher: model},{
+            modelChangeCallback: function(){
+                $('pre code#model').text(JSON.stringify(model, null, '    '));
+                $('#htmlCode').text($('#htmlDiv').html().trim());
+                $('pre code').each(function(i,e){hljs.highlightBlock(e);});
+            }
+        });
+        $('pre code#model').text(JSON.stringify(model, null, '    '));
+        $('#htmlCode').text($('#htmlDiv').html().trim());
+    });
+</script>
+</body>
+</html>

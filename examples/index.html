@@ -1,0 +1,36 @@
+<!doctype html>
+<html>
+    <head>
+        <title>Generic Data Binder Examples</title>
+        <link rel="stylesheet" href="http://bootswatch.com/slate/bootstrap.min.css">
+        <style>
+            pre{background-color: #7a8288;
+                border: 1px solid #7a8288;}
+        </style>
+    </head>
+    <body style="margin:20px;">
+        <div style="width:300px; margin:0 auto;">
+            <h1>GDB Examples</h1>
+            <ul>
+                <li><a href="simplest.html" target="frame">Simplest Implementation Example</a></li>
+                <li><a href="form.html" target="frame">Form Binding Example</a></li>
+                <li><a href="model-to-view.html" target="frame">Model -> View Example</a></li>
+            </ul>
+        </div>
+        <iframe id="frame" style="width:100%; border:none;" src="simplest.html"></iframe>
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+        <script>
+            $(function(){
+                var resizedd=function(){
+                    var $iframe=$('#frame');
+                    $iframe.height(($(window).height()-$iframe.position().top));
+                };
+                resizedd();
+                $(window).resize(function(){
+                    resizedd();
+                });
+            });
+        </script>
+    </body>
+</html>

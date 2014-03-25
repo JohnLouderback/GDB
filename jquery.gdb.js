@@ -35,7 +35,8 @@ $(function(){//Wait for jQuery to be ready
             bindAsTextOnly: false,
             insertPolyfills: true,
             parsingFunctionsObject: {},
-            debugLogging: false
+            debugLogging: false,
+            modelChangeCallback: null
         };
 
         if(userOptionsObject !== undefined)//If there are user options supplied...
@@ -63,6 +64,8 @@ $(function(){//Wait for jQuery to be ready
                     var value=$this.val(); //get the value
                 else //Otherwise...
                     value=options.bindAsTextOnly ? $this.text() : $this.html();//get the text or html of the element depending on the options set.
+
+                value=value.replace("'", "\\'").replace(/\n/g, '\\n');//escape new line and single quotes
 
                 eval("modelsToMonitor."+modelLocation+"="+"'"+value+"'");//evaluate the path in the model to which the data is bound.
 
@@ -107,6 +110,9 @@ $(function(){//Wait for jQuery to be ready
 
                             if(options.debugLogging)
                                 console.log(objectLocationString+key+" is now equal to "+newValue);
+
+                            if(options.modelChangeCallback)//If there is a callback function specified by the user
+                                options.modelChangeCallback();//run it now.
 
                         });
 

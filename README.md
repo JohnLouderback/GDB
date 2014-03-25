@@ -1,7 +1,7 @@
 Generic Data Binder v0.8
 ===
 ##About GDB
-Generic Data Binder for jQuery. Binds views and models in realtime with live two-way binding and no hefty framework necessary.
+Generic Data Binder (GDB) for jQuery is a framework agnostic and extremely easy to use 2 way data binder. GDB binds views and models in realtime with live two-way binding and no hefty framework necessary.
 
 ##Example Useage
 ###HTML or Template File
@@ -38,6 +38,7 @@ realtime | boolean | ``true`` | This property specifies whether or not to update
 dataBindToAttr | string | ``"data-bindto"`` | This property specifies the name of the attribute which contains the mapping to the location in the model to which a given element's data is bound. Changing this property's value may be useful in the event that there is a conflict with using the ``data-bindto`` attribute.
 bindAsTextOnly | boolean | ``false`` | This property specifies whether to use content of contenteditable elements as HTML or get the plain text.
 debugLogging | boolean | ``false`` | When is property is set to ``true``, changes made to the model or view are recorded in the console via the console.log() function.
+modelChangeCallback | function or null | ``null`` | This property may be set to a callback function which is fired when the model has been changed. This function is currently passed no arguments.
 
 All User Options are entirely optional.
 
