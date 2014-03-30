@@ -1,11 +1,11 @@
-Generic Data Binder v0.8
+Generic Data Binder v1.0
 ===
 ##About GDB
 Generic Data Binder (GDB) for jQuery is a framework agnostic and extremely easy to use 2 way data binder. GDB binds views and models in realtime with live two-way binding and no hefty framework necessary.
 
 ##Why Use GDB?
 GDB is a simple to use, zero configuration (unless you want to), template engine and framework agnostic little plugin. Drop it in and initialize it. It just works. Updates to the model automagically update the view and changes in the view automagically update the model.
-Finally, a plugin that allows are for bi-directional live bindings between your view and model without the need to learn a hefty framework or change your current work flow.
+Finally, a plugin that allows for bi-directional live bindings between your view and model without the need to learn a hefty framework or change your current work flow.
 
 ##Example Useage
 ###HTML or Template File
@@ -54,8 +54,9 @@ Tested in Firefox, Chrome, and IE. Works in IE 8+.
 - [ ] Add ability to add data parsing functions
 - [ ] Add more and better examples
 - [ ] Create pure JavaScript version if there is an interest
+- [x] Upload initial stable release
 - [x] Upload initial beta version
 
 ##Changelog
-v1.0 - 3/29/2014 - Initial Stable Release. Fixed several minor bugs and added new callback function.
-v0.8 - 3/23/2014 - Uploaded initial version.
+- v1.0 - 3/29/2014 - Initial Stable Release. Fixed several minor bugs and added new callback function.
+- v0.8 - 3/23/2014 - Uploaded initial version.
