@@ -4,10 +4,7 @@
     <title>Generic Data Binder Simplest Example</title>
     <link rel="stylesheet" href="http://bootswatch.com/slate/bootstrap.min.css">
     <link rel="stylesheet" href="http://yandex.st/highlightjs/8.0/styles/pojoaque.min.css">
-    <style>
-        pre{background-color: #7a8288;
-            border: 1px solid #7a8288;}
-    </style>
+    <style>pre{background-color:#7a8288;border:1px solid #7a8288}html::-webkit-scrollbar{width:5px}html::-webkit-scrollbar-track{background-color:rgba(0,0,0,.31);-webkit-border-radius:5px}html::-webkit-scrollbar-thumb:vertical{margin:5px;background-color:#464646;border:1px solid #595959;-webkit-border-radius:5px}html::-webkit-scrollbar-button:end:increment,html::-webkit-scrollbar-button:start:decrement{height:5px;display:block}</style>
     <script src="http://yandex.st/highlightjs/8.0/highlight.min.js"></script>
 </head>
 <body style="margin:20px;">
@@ -15,9 +12,75 @@
     <div class="col-md-6">
         <h2>GDB Model -> View Example</h2>
         <div id="htmlDiv">
-<div data-bindto="teacher.name" style="padding:10px;margin-bottom:5px;" class="img-rounded bg-primary">
-    Ms. Trunchbull
-</div>
+
+            <form role="form">
+                <div class="form-group">
+                    <label>Contenteditable</label>
+                    <div data-bindto="profileData.name" style="padding:10px;margin-bottom:5px;" class="img-rounded bg-primary" contenteditable="true">
+                        Ms. Trunchbull
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="exampleInputEmail1">Input type text</label>
+                    <input data-bindto="profileData.email" type="email" class="form-control" id="exampleInputEmail1" placeholder="Enter email">
+                </div>
+                <div class="form-group">
+                    <label for="exampleInputPassword1">Input type Password</label>
+                    <input data-bindto="profileData.password" type="password" class="form-control" id="exampleInputPassword1" placeholder="Password">
+                </div>
+                <div class="form-group">
+                    <label for="bio">Textarea</label>
+                    <textarea data-bindto="profileData.bio" class="form-control" rows="3" id="bio"></textarea>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>Checkboxes</label><br>
+                        <input type="checkbox" value="red" name="colors[]" data-bindto="profileData.colors"> Red<br>
+                        <input type="checkbox" value="blue" name="colors[]" data-bindto="profileData.colors" checked> Blue<br>
+                        <input type="checkbox" value="orange" name="colors[]" data-bindto="profileData.colors"> Orange<br>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>Radio boxes</label><br>
+                        <input type="radio" value="male" name="gender[]" data-bindto="profileData.gender"> Male<br>
+                        <input type="radio" value="female" name="gender[]" data-bindto="profileData.gender" checked> Female<br>
+                        <input type="radio" value="other" name="gender[]" data-bindto="profileData.gender"> Other<br>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="primLang">Single Select</label>
+                    <select id="primLang" class="form-control" data-bindto="profileData.language">
+                        <option default value="">Select Your Primary Language</option>
+                        <option value="english" selected>English</option>
+                        <option value="spanish">Spanish</option>
+                        <option value="french">French</option>
+                        <option value="french">Italian</option>
+                        <option value="french">Russian</option>
+                        <option value="chinese">Chinese</option>
+                        <option value="japanese">Japanese</option>
+                        <option value="hindi">Hindi</option>
+                        <option value="arabic">Arabic</option>
+                        <option value="ancient tongues">Ancient Tongues</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="knownLang">Multiple Select</label>
+                    <select id="knownLang" multiple class="form-control" size="11" data-bindto="profileData.languages">
+                        <option default value="">Select Your Primary Language</option>
+                        <option value="english">English</option>
+                        <option value="spanish" selected>Spanish</option>
+                        <option value="french">French</option>
+                        <option value="italian" selected>Italian</option>
+                        <option value="russian">Russian</option>
+                        <option value="chinese" selected>Chinese</option>
+                        <option value="japanese">Japanese</option>
+                        <option value="hindi">Hindi</option>
+                        <option value="arabic">Arabic</option>
+                        <option value="ancient tongues">Ancient Tongues</option>
+                    </select>
+                </div>
+            </form>
 <button id="changeModelBtn" class="btn btn-default">Change Model</button>
         </div>
         Press the above button to change the data in the model which in turn is reflected in the view.
@@ -29,23 +92,48 @@
         <h3>HTML</h3>
         <pre><code id="htmlCode"></code></pre>
         <h3>JavaScript</h3>
-        <pre><code id="jsCode">var model={name: "Ms. Trunchbull"};
+        <pre><code id="jsCode">var model={
+    name: "Ms. Trunchbull",
+    email: "",
+    password: "",
+    bio: "",
+    colors: ["blue"],
+    gender: "male",
+    language: "english",
+    languages: ["spanish","italian","chinese"]
+};
 
-GDB({teacher: model});
+GDB({profileData: model});
 
 $('#changeModelBtn').click(function(){
     model.name="Matilda";
+    model.email="john@example.com";
+    model.password="examplePassword123";
+    model.bio="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris quis ultrices mi, vitae ultricies justo.\n Sed bibendum tempor lacus eget varius. Vestibulum ante ipsum primis.";
+    model.colors=["red","orange"];
+    model.gender="male";
+    model.language="spanish";
+    model.languages=["russian","french","english"];
 });</code></pre>
     </div>
 
 
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
-<script src="../jquery.gdb.min.js"></script>
+<script src="../jquery.gdb.js"></script>
 <script>
     hljs.initHighlightingOnLoad();//Just for the demo's syntax highlighting
     $(function(){
-        var model={name: "Ms. Trunchbull"};
-        GDB({teacher: model},{
+        var model={
+            name: "Ms. Trunchbull",
+            email: "",
+            password: "",
+            bio: "",
+            colors: ["blue"],
+            gender: "male",
+            language: "english",
+            languages: ["spanish","italian","chinese"]
+        };
+        GDB({profileData: model},{
             modelChangeCallback: function(){
                 $('pre code#model').text(JSON.stringify(model, null, '    '));
                 $('#htmlCode').text($('#htmlDiv').html().trim());
@@ -56,6 +144,13 @@ $('#changeModelBtn').click(function(){
         $('#htmlCode').text($('#htmlDiv').html().trim());
         $('#changeModelBtn').click(function(){
             model.name="Matilda";
+            model.email="john@example.com";
+            model.password="examplePassword123";
+            model.bio="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris quis ultrices mi, vitae ultricies justo.\n Sed bibendum tempor lacus eget varius. Vestibulum ante ipsum primis.";
+            model.colors=["red","orange"];
+            model.gender="male";
+            model.language="spanish";
+            model.languages=["russian","french","english"];
         });
     });
 </script>

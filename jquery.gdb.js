@@ -49,28 +49,43 @@ $(function(){//Wait for jQuery to be ready
         var modelsToMonitor=modelsToMonitorObject;
 
         //EVENT LISTENERS
-        var listenForEvents=(options.realtime ? (GDB.helpers.isEventSupported('input') ? 'input' : 'keyup')+' paste ' : '')+'blur';//listen for events based on whether we're updating in realtime or just as changes are committed.
+        var listenForEvents=(options.realtime ? (GDB.helpers.isEventSupported('input') ? 'input' : 'keyup')+' paste ' : '')+' change blur';//listen for events based on whether we're updating in realtime or just as changes are committed.
 
         //LISTEN FOR CHANGES TO ELEMENTS IN THE VIEW
-        $(options.rootElementSelectorString).on(listenForEvents,'['+options.dataBindToAttr+'],['+options.dataBindToTemplateAttr+']', function(){
+        $(options.rootElementSelectorString).on(listenForEvents,'['+options.dataBindToAttr+'],['+options.dataBindToTemplateAttr+']', function(e){
             var $this=$(this);
+            var value="";
 
             if($this.is('['+options.dataBindToAttr+']')){//If this element is bound to a location on the data model
 
                 var modelLocation=$this.attr(options.dataBindToAttr);//get the location in the in the model the element is bound to
 
                 //Determine what kind of element this is
-                if($this.is('input,select,textarea'))//if this is a form element
-                    var value=$this.val(); //get the value
+                if($this.is('input,select,textarea')){//if this is a form element
+                    //var value=$this.val(); //get the value
+                    if($this.is(':checkbox'))//if this form element is a checkbox
+                    {
+                        //Find all field bound to this location in the model that are checked check boxes
+                        value=$("["+options.dataBindToAttr+"='"+$this.attr(options.dataBindToAttr)+"'][name='"+$this.attr('name')+"']:checked").map(function(){
+                            return $(this).val();
+                        }).toArray();//and create an array from these values
+                    }
+                    else{//Otherwise...
+                            value=$this.val();//get the value of the bound element
+                    }
+                }
                 else //Otherwise...
                     value=options.bindAsTextOnly ? $this.text() : $this.html();//get the text or html of the element depending on the options set.
 
-                value=value.replace("'", "\\'").replace(/\n/g, '\\n');//escape new line and single quotes
+                if(!$.isArray(value))//If the value is not an array
+                    value="'"+value.replace("'", "\\'").replace(/\n/g, '\\n')+"'";//escape new line and single quotes
+                else
+                    value=JSON.stringify(value);
 
-                eval("modelsToMonitor."+modelLocation+"="+"'"+value+"'");//evaluate the path in the model to which the data is bound.
+                eval("modelsToMonitor."+modelLocation+"="+value);//evaluate the path in the model to which the data is bound.
 
                 if(options.debugLogging)
-                    console.log(modelLocation+" is now equal to "+value);
+                    console.log(modelLocation+" is now equal to "+value+" as per changes made in the view as witnessed by the \""+e.type+"\" event.");
 
             }
         });
@@ -100,8 +115,38 @@ $(function(){//Wait for jQuery to be ready
                             var newValue=change.object[change.name];
 
                             if($(elementSelector).is('input,select,textarea')){ //If element is a form element
-                                if($(elementSelector).val()!=newValue)
-                                    $(elementSelector).val(newValue);//set the value of the bound element
+                                    if($(elementSelector).is(':checkbox'))//if this form element is checkbox
+                                    {
+                                        $(elementSelector).each(function(){//For each of these checkbox elements
+                                            var $this=$(this);
+                                            var isValue=false;//variable for checking whether or not this element is among checked values
+                                            newValue.forEach(function(newValue){//compare the value of this element against each value in the array of values
+                                                if($this.val()==newValue){//if the value of this element is equal to a value in the array
+                                                    if(!$this.is(':checked'))//and the element is not already checked
+                                                        $this.attr('checked','checked');//check the element
+                                                    isValue=true;//if this element is equal to a value in the array, set this variable to true
+                                                }
+                                            });
+                                            if(!isValue)//if it has been determined that this element is equal to no value in the array,
+                                                $this.removeAttr('checked');//remove any potential check marks.
+                                        });
+                                    }
+                                    else if($(elementSelector).is(':radio')){//else, if this is a radio box
+                                        $(elementSelector).each(function(){//For each of these radio elements
+                                            var $this=$(this);
+                                            if($this.val()==newValue)//if the value of this element is equal to the changed value
+                                                $this.attr('checked','checked');//check the radio box in question
+                                            else{//Otherwise, if this is not equal to the new value, remove the checked attribute
+                                                $this.removeAttr('checked');//remove any potential check marks.
+                                            }
+                                        });
+
+                                    }
+                                    else{//Otherwise...
+                                        if($(elementSelector).val()!=newValue)
+                                            $(elementSelector).val(newValue);//set the value of the bound element
+                                    }
+
                             }
                             else{
                                 if(!options.bindAsTextOnly){//if we're not binding as text only
@@ -114,8 +159,13 @@ $(function(){//Wait for jQuery to be ready
                                 }
                             }
 
+                            if($.isArray(newValue))//If the new value is an array
+                                var logValue=JSON.stringify(newValue);//set the logging value as a stringified array
+                            else//Otherwise...
+                                var logValue="'"+newValue+"'";//display as a quoted string.
+
                             if(options.debugLogging)
-                                console.log(objectLocationString+key+" is now equal to "+newValue);
+                                console.log(objectLocationString+key+" is now equal to "+logValue+" as observed in the model.");
 
                             if(options.modelChangeCallback)//If there is a callback function specified by the user
                                 options.modelChangeCallback();//run it now.
