@@ -1,4 +1,4 @@
-Generic Data Binder v1.0 [<img src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif">](https://www.paypal.com/us/cgi-bin/webscr?cmd=_flow&SESSION=4LzAZPrFDpMuLgLR7BWWSJ2Gli_KXjUfLzmfniAi5DjnjW8Z0YWfliXEi3S&dispatch=5885d80a13c0db1f8e263663d3faee8d8cdcf517b037b4502f6cc98f1ee6e5fb)
+Generic Data Binder v1.0 [<img src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif">](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=john@johnlouderback.com&lc=US&item_name=Generic%20Data%20Binder&currency_code=USD&bn=PP-DonationsBF:btn_donate_LG.gif:NonHosted)
 ===
 ##About GDB
 Generic Data Binder (GDB) for jQuery is a framework agnostic and extremely easy to use 2 way data binder. GDB binds views and models in realtime with live two-way binding and no hefty framework necessary.
