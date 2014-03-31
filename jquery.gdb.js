@@ -114,50 +114,54 @@ $(function(){//Wait for jQuery to be ready
                             var elementSelector="["+options.dataBindToAttr+"='"+objectLocationString+key+"']";
                             var newValue=change.object[change.name];
 
-                            if($(elementSelector).is('input,select,textarea')){ //If element is a form element
-                                    if($(elementSelector).is(':checkbox'))//if this form element is checkbox
-                                    {
-                                        $(elementSelector).each(function(){//For each of these checkbox elements
-                                            var $this=$(this);
-                                            var isValue=false;//variable for checking whether or not this element is among checked values
-                                            newValue.forEach(function(newValue){//compare the value of this element against each value in the array of values
-                                                if($this.val()==newValue){//if the value of this element is equal to a value in the array
-                                                    if(!$this.is(':checked'))//and the element is not already checked
-                                                        $this.attr('checked','checked');//check the element
-                                                    isValue=true;//if this element is equal to a value in the array, set this variable to true
+                            $(elementSelector).each(function(){//loop through each item
+
+                                if($(this).is('input,select,textarea')){ //If element is a form element
+                                        if($(this).is(':checkbox'))//if this form element is checkbox
+                                        {
+                                            $(elementSelector).each(function(){//For each of these checkbox elements
+                                                var $this=$(this);
+                                                var isValue=false;//variable for checking whether or not this element is among checked values
+                                                newValue.forEach(function(newValue){//compare the value of this element against each value in the array of values
+                                                    if($this.val()==newValue){//if the value of this element is equal to a value in the array
+                                                        if(!$this.is(':checked'))//and the element is not already checked
+                                                            $this.attr('checked','checked');//check the element
+                                                        isValue=true;//if this element is equal to a value in the array, set this variable to true
+                                                    }
+                                                });
+                                                if(!isValue)//if it has been determined that this element is equal to no value in the array,
+                                                    $this.removeAttr('checked');//remove any potential check marks.
+                                            });
+                                        }
+                                        else if($(this).is(':radio')){//else, if this is a radio box
+                                            $(elementSelector).each(function(){//For each of these radio elements
+                                                var $this=$(this);
+                                                if($this.val()==newValue)//if the value of this element is equal to the changed value
+                                                    $this.attr('checked','checked');//check the radio box in question
+                                                else{//Otherwise, if this is not equal to the new value, remove the checked attribute
+                                                    $this.removeAttr('checked');//remove any potential check marks.
                                                 }
                                             });
-                                            if(!isValue)//if it has been determined that this element is equal to no value in the array,
-                                                $this.removeAttr('checked');//remove any potential check marks.
-                                        });
-                                    }
-                                    else if($(elementSelector).is(':radio')){//else, if this is a radio box
-                                        $(elementSelector).each(function(){//For each of these radio elements
-                                            var $this=$(this);
-                                            if($this.val()==newValue)//if the value of this element is equal to the changed value
-                                                $this.attr('checked','checked');//check the radio box in question
-                                            else{//Otherwise, if this is not equal to the new value, remove the checked attribute
-                                                $this.removeAttr('checked');//remove any potential check marks.
-                                            }
-                                        });
 
-                                    }
-                                    else{//Otherwise...
-                                        if($(elementSelector).val()!=newValue)
-                                            $(elementSelector).val(newValue);//set the value of the bound element
-                                    }
+                                        }
+                                        else{//Otherwise...
+                                            if($(elementSelector).val()!=newValue)
+                                                $(elementSelector).val(newValue);//set the value of the bound element
+                                        }
 
-                            }
-                            else{
-                                if(!options.bindAsTextOnly){//if we're not binding as text only
-                                    if($(elementSelector).html()!=newValue)
-                                        $(elementSelector).html(newValue);//set the html of the bound element
                                 }
-                                else{ //Otherwise...
-                                    if($(elementSelector).text()!=newValue)
-                                        $(elementSelector).text(newValue);//set the text of the bound element
+                                else{
+                                    if(!options.bindAsTextOnly){//if we're not binding as text only
+                                        if($(elementSelector).html()!=newValue)
+                                            $(elementSelector).html(newValue);//set the html of the bound element
+                                    }
+                                    else{ //Otherwise...
+                                        if($(elementSelector).text()!=newValue)
+                                            $(elementSelector).text(newValue);//set the text of the bound element
+                                    }
                                 }
-                            }
+
+                            });
 
                             if($.isArray(newValue))//If the new value is an array
                                 var logValue=JSON.stringify(newValue);//set the logging value as a stringified array
