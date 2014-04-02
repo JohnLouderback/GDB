@@ -131,6 +131,11 @@ $(function(){//Wait for jQuery to be ready
                             var elementSelector="["+options.dataBindToAttr+"='"+thisLocation+key+"']";
                             var newValue=change.object[change.name];
 
+                           if(typeof newValue === 'object' || //If the new value is an object
+                            newValue instanceof Array){ //or an array
+                               observeObjects(value,thisLocation,previousObjects);//Observe this object or array and all of its obserable children.
+                           }
+
                             $(elementSelector).each(function(){//loop through each item
 
                                 if($(this).is('input,select,textarea')){ //If element is a form element
