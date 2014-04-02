@@ -96,35 +96,42 @@ $(function(){//Wait for jQuery to be ready
             previousObjects = previousObjects || [];//array of previously observed objects. We keep this to prevent redundant observation in circular structures
 
             $.each(objectToObserve,function(key,value) {
-                if((value !== null && //check if value is not null
-                   (typeof value === 'object' || //and it is an object
-                   value instanceof Array)) && //or an array
-                   function(){ //finally check that this object is not reference to a previously observed object
-                         var wasNotSeen=true;
-                         previousObjects.forEach(function(object){
-                             if(object===value)
-                                wasNotSeen=false;
-                         });
-                         return wasNotSeen;
-                   }()){
+
+
+               if((value !== null && //check if value is not null
+                (typeof value === 'object' || //and it is an object
+                value instanceof Array)) && //or an array
+                function(){ //finally check that this object is not reference to a previously observed object
+                     var wasNotSeen=true;
+                     previousObjects.forEach(function(object){
+                         if(object===value)
+                            wasNotSeen=false;
+                     });
+                     return wasNotSeen;
+                }()){
 
                     previousObjects.push(value);//add this object to the array of previously seen objects.
 
+                    var thisLocation="";//variable for storing the current location
+
                     if(typeof objectLocationString === "undefined")//If there is no object location string, create a new one.
-                        objectLocationString=""+key;
+                        thisLocation=""+key;
                     else{ //Otherwise...
                         if(!isNaN(key))//if the key is an array index
-                            objectLocationString+="["+key+"]";
+                            thisLocation=objectLocationString+"["+key+"]";
                         else //or if the key is an object property
-                            objectLocationString+="."+key;
+                            thisLocation=objectLocationString+"."+key;
                     }
+
+                   console.log(thisLocation);
+                   console.log(value);
 
                     //OBSERVE CHANGES IN MODEL'S DATASTRUCTURE TO REFLECT
                     Object.observe(value,function(changes){
                         changes.forEach(function(change){//For every change in the object...
 
                             var key=!isNaN(change.name) ? '['+change.name+']' : '.'+change.name; //set key based on whether the key is an array index or object property.
-                            var elementSelector="["+options.dataBindToAttr+"='"+objectLocationString+key+"']";
+                            var elementSelector="["+options.dataBindToAttr+"='"+thisLocation+key+"']";
                             var newValue=change.object[change.name];
 
                             $(elementSelector).each(function(){//loop through each item
@@ -182,11 +189,11 @@ $(function(){//Wait for jQuery to be ready
                                 var logValue="'"+newValue+"'";//display as a quoted string.
 
                             if(options.debugLogging)
-                                console.log(objectLocationString+key+" is now equal to "+logValue+" as observed in the model.");
+                                console.log(thisLocation+key+" is now equal to "+logValue+" as observed in the model.");
 
                             if(typeof options.modelChangeCallback === "function"){//If there is a callback function specified by the user
                                 if(options.debugLogging)
-                                    console.log("Model change callback executed for change in "+objectLocationString+key);
+                                    console.log("Model change callback executed for change in "+thisLocation+key);
                                 options.modelChangeCallback();//run it now.
                             }
                             else{
@@ -198,7 +205,7 @@ $(function(){//Wait for jQuery to be ready
 
                     });
 
-                    observeObjects(value,objectLocationString,previousObjects);
+                    observeObjects(value,thisLocation,previousObjects);
 
                 }
             });
