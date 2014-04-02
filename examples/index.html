@@ -27,6 +27,21 @@
                 $(window).resize(function(){
                     resizedd();
                 });
+
+                function queryToObj(){
+                    var string=window.location.search.substr(1);
+                    var array=string.split("&");
+                    var obj={};
+                    array.forEach(function(i){
+                        var propvalue=i.split("=");
+                        obj[propvalue[0]]=propvalue[1];
+                    });
+                    return obj;
+                }
+
+                if(typeof queryToObj().page !== "undefined")
+                    $('iframe').attr('src',queryToObj().page);
+
             });
         </script>
     </body>

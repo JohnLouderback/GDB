@@ -91,11 +91,24 @@ $(function(){//Wait for jQuery to be ready
         });
 
         //LOOP THROUGH ALL SUPPLIED MODELS AND RECURSIVELY OBSERVE OBJECTS WITHIN OBJECTS
-        var observeObjects=function(objectToObserve,objectLocationString){
+        var observeObjects=function(objectToObserve,objectLocationString,previousObjects){
+
+            previousObjects = previousObjects || [];//array of previously observed objects. We keep this to prevent redundant observation in circular structures
 
             $.each(objectToObserve,function(key,value) {
+                if((value !== null && //check if value is not null
+                   (typeof value === 'object' || //and it is an object
+                   value instanceof Array)) && //or an array
+                   function(){ //finally check that this object is not reference to a previously observed object
+                         var wasNotSeen=true;
+                         previousObjects.forEach(function(object){
+                             if(object===value)
+                                wasNotSeen=false;
+                         });
+                         return wasNotSeen;
+                   }()){
 
-                if(value !== null && typeof value === 'object' || value instanceof Array){
+                    previousObjects.push(value);//add this object to the array of previously seen objects.
 
                     if(typeof objectLocationString === "undefined")//If there is no object location string, create a new one.
                         objectLocationString=""+key;
@@ -171,14 +184,21 @@ $(function(){//Wait for jQuery to be ready
                             if(options.debugLogging)
                                 console.log(objectLocationString+key+" is now equal to "+logValue+" as observed in the model.");
 
-                            if(options.modelChangeCallback)//If there is a callback function specified by the user
+                            if(typeof options.modelChangeCallback === "function"){//If there is a callback function specified by the user
+                                if(options.debugLogging)
+                                    console.log("Model change callback executed for change in "+objectLocationString+key);
                                 options.modelChangeCallback();//run it now.
+                            }
+                            else{
+                                if(options.debugLogging)
+                                    console.log("No callback supplied for model change thus no function was called");
+                            }
 
                         });
 
                     });
 
-                    observeObjects(value,objectLocationString);
+                    observeObjects(value,objectLocationString,previousObjects);
 
                 }
             });
