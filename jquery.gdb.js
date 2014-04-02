@@ -123,9 +123,6 @@ $(function(){//Wait for jQuery to be ready
                             thisLocation=objectLocationString+"."+key;
                     }
 
-                   console.log(thisLocation);
-                   console.log(value);
-
                     //OBSERVE CHANGES IN MODEL'S DATASTRUCTURE TO REFLECT
                     Object.observe(value,function(changes){
                         changes.forEach(function(change){//For every change in the object...
