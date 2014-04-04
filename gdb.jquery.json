@@ -1,0 +1,38 @@
+{
+    "name": "gdb",
+    "title": "Generic Data Binder",
+    "description": "Generic Data Binder (GDB) for jQuery is a framework agnostic and extremely easy to use 2 way data binder. GDB binds views and models in realtime with live two-way binding and no hefty framework necessary.",
+    "keywords": [
+        "gdb",
+        "generic",
+        "data",
+        "binder",
+        "binding",
+        "live",
+        "two-way"
+    ],
+    "version": "1.1.0",
+    "author": {
+        "name": "John Louderback"
+    },
+    "maintainers": [
+        {
+            "name": "John Louderback",
+            "email": "john@johnlouderback.com"
+        }
+    ],
+    "licenses": [
+        {
+            "type": "Apache V2",
+            "url": "https://github.com/JohnLouderback/GDB/blob/master/LICENSE"
+        }
+    ],
+    "bugs": "https://github.com/JohnLouderback/GDB/issues?state=open",
+    "homepage": "http://gdb.thewebdev.guru",
+    "docs": "https://github.com/JohnLouderback/GDB",
+    "download": "https://github.com/JohnLouderback/GDB/archive/master.zip",
+    "demo": "http://gdb.thewebdev.guru/examples/",
+    "dependencies": {
+        "jquery": ">=1.7"
+    }
+}
