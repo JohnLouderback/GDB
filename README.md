@@ -1,4 +1,4 @@
-Generic Data Binder v1.0 [<img src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif">](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=john@johnlouderback.com&lc=US&item_name=Generic%20Data%20Binder&currency_code=USD&bn=PP-DonationsBF:btn_donate_LG.gif:NonHosted)
+Generic Data Binder v1.2 [<img src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif">](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=john@johnlouderback.com&lc=US&item_name=Generic%20Data%20Binder&currency_code=USD&bn=PP-DonationsBF:btn_donate_LG.gif:NonHosted)
 ===
 ##About GDB
 Generic Data Binder (GDB) for jQuery is a framework agnostic and extremely easy to use 2 way data binder. GDB binds views and models in realtime with live two-way binding and no hefty framework necessary.
@@ -40,23 +40,36 @@ Property | Type | Default Value | Description
 rootElementSelectorString | string | ``"body"`` | This property specifies what the root element is for whose children are monitored for changes and should be updated in realtime. Default is the body element, but specifying another element may be useful if using multiple instances of GDB for multiple templates.
 realtime | boolean | ``true`` | This property specifies whether or not to update the model with changes as the user makes them. Such as: if the user is typing into an input, textarea, or contenteditable field the model will be updated with everything key press and alteration. If this value is set to ``false`` then the model will only be updated when the bound field loses focus.
 dataBindToAttr | string | ``"data-bindto"`` | This property specifies the name of the attribute which contains the mapping to the location in the model to which a given element's data is bound. Changing this property's value may be useful in the event that there is a conflict with using the ``data-bindto`` attribute.
+dataWatchingAttr | string | ``"data-watching"`` | This property specifies the name of the attribute used for specifying a comma separated list of locations in the model for which this element should react to changes to. Changes are reactived to with a data parsing function as mapped by the attribute specified by the ``dataParseWithAttr`` property.
+dataParseWithAttr | string | ``"data-parsewith"`` | This property specifies the name of the attribute used for specifying a location in the model from where an object containing an "in" and/or "out" function exists. This object's "in" or "out" function will be called if the model or element changes respectively.
 bindAsTextOnly | boolean | ``false`` | This property specifies whether to use content of contenteditable elements as HTML or get the plain text.
 debugLogging | boolean | ``false`` | When is property is set to ``true``, changes made to the model or view are recorded in the console via the console.log() function.
-modelChangeCallback | function or null | ``null`` | This property may be set to a callback function which is fired when the model has been changed. This function is currently passed no arguments.
+modelChangeCallback | function or null | ``null`` | This property may be set to a callback function which is fired when the model has been changed. This function is currently passed an object containing information about the change as an argument. The option contains:``locationPathString``: The location in the model as a string; ``$boundElements``: The bound elements as a jQuery collection; ``newValue``: The new value of the property; ``oldValue``: The old value of the property.
+elementChangeCallback | function or null | ``null`` | This property may be set to a callback function which is fired when the model has been changed. This function is currently passed an object containing information about the change as an argument. The option contains:``locationPathString``: The location in the model as a string; ``$boundElement``: The element changed as a jQuery object; ``newValue``: The new value of the property.
 
 All User Options are entirely optional.
 
+##Public Methods
+Method | Returns | Description
+-------|---------|------------
+GDB.getBoundElementFromModelPath( pathString ) | ``jQuery`` Bound elements | Given a path to a location to the model, this method will return all elements bound to (via the ``data-bindto`` attribute).
+GDB.getModelPathFromBoundElement( selectorString ) | ``string`` Model path | Given either a DOM element (not a jQuery collection) or a selector string, this method will return a path to which the given element is bound to via the ``data-bindto`` attribute.
+GDB.getValueFromModelPath | ``any type`` Value from model | Given a path to a location to the model, this method will return the value location at that position in the model.
+
+
 ##Browser Support
-Tested in Firefox, Chrome, and IE. Works in IE 8+.
+Tested in Firefox, Chrome, and IE. Works in IE 9+.
 
 ##TODO
+- [ ] Acheive better performance
 - [ ] Add simple templating functionality
-- [ ] Add ability to add data parsing functions
-- [ ] Add more and better examples
+- [x] Add ability to add data parsing functions
+- [x] Add more and better examples
 - [ ] Create pure JavaScript version if there is an interest
 - [x] Upload initial stable release
 - [x] Upload initial beta version
 
 ##Changelog
+- v1.2 - 4/26/2014 - Added data parsing function abilities, new public methods, AMD support, and added more examples.
 - v1.0 - 3/29/2014 - Initial Stable Release. Fixed several minor bugs and added new callback function.
 - v0.8 - 3/23/2014 - Uploaded initial version.

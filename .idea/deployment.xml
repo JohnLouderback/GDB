@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="PublishConfigData" autoUpload="On explicit save action (Ctrl+S)" serverName="TheWebDev.Guru" autoUploadExternalChanges="true">
+    <serverData>
+      <paths name="TheWebDev.Guru">
+        <serverdata>
+          <mappings>
+            <mapping deploy="public_html/examples/" local="$PROJECT_DIR$/examples" web="examples/" />
+          </mappings>
+        </serverdata>
+      </paths>
+    </serverData>
+    <option name="myAutoUpload" value="ON_EXPLICIT_SAVE" />
+  </component>
+</project>
+
