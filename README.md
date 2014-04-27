@@ -54,7 +54,7 @@ Method | Returns | Description
 -------|---------|------------
 GDB.getBoundElementFromModelPath( pathString ) | ``jQuery`` Bound elements | Given a path to a location to the model, this method will return all elements bound to (via the ``data-bindto`` attribute).
 GDB.getModelPathFromBoundElement( selectorString ) | ``string`` Model path | Given either a DOM element (not a jQuery collection) or a selector string, this method will return a path to which the given element is bound to via the ``data-bindto`` attribute.
-GDB.getValueFromModelPath | ``any type`` Value from model | Given a path to a location to the model, this method will return the value location at that position in the model.
+GDB.getValueFromModelPath( pathString ) | ``any type`` Value from model | Given a path to a location to the model, this method will return the value location at that position in the model.
 
 
 ##Browser Support
