@@ -52,10 +52,16 @@ All User Options are entirely optional.
 ##Public Methods
 Method | Returns | Description
 -------|---------|------------
-GDB.getBoundElementFromModelPath( pathString ) | ``jQuery`` Bound elements | Given a path to a location to the model, this method will return all elements bound to (via the ``data-bindto`` attribute).
-GDB.getModelPathFromBoundElement( selectorString ) | ``string`` Model path | Given either a DOM element (not a jQuery collection) or a selector string, this method will return a path to which the given element is bound to via the ``data-bindto`` attribute.
-GDB.getValueFromModelPath( pathString ) | ``any type`` Value from model | Given a path to a location to the model, this method will return the value location at that position in the model.
+GDB.getBoundElementFromModelPath( ``pathString`` ) | ``jQuery`` Bound elements | Given a path to a location to the model, this method will return all elements bound to (via the ``data-bindto`` attribute).
+GDB.getModelPathFromBoundElement( ``selectorString`` ) | ``string`` Model path | Given either a DOM element (not a jQuery collection) or a selector string, this method will return a path to which the given element is bound to via the ``data-bindto`` attribute.
+GDB.getValueFromModelPath( ``pathString`` ) | ``any type`` Value from model | Given a path to a location to the model, this method will return the value location at that position in the model.
 
+##Element Attributes
+Attribute Default Name | Expected Value(s) | Example Value | Description
+-----------------------|-------------------|---------------|------------
+data-bindto | A single path to a location in the model | ``teacher.name`` or ``teachers[6].students[0].name`` | This attribute is mapped to a location in the model to which the element is bound. Changes to this element are reflected in the model and changes in the model are reflected in this element. This attribute **should not** be used in conjuction with ``data-watching`` or ``data-parsewith``.
+data-watching | A comma separated list of one or more locations in the model | ``teacher.firstName``, ``teacher.firstName,teacher.lastName``, ``teacher[3].students[4].grade``, or ``teacher[3].students[4].grade,teacher[3].students[4].firstName,teacher[3].students[4].lastName`` | This attribute is mapped to one or more locations in the model separated by commas. If any of these properties in the model change the element's ``data-parsewith`` attribute's object's ``in`` function is called. If this element is changed, the element's ``data-parsewith`` attribute's object's ``out`` function is called. This attribute **should not** be used in conjuction with ``data-bindto`` and **should be** used with ``data-parsewith``.
+data-parsewith | A single path a location in the model of an object containing an ``in`` and/or ``out`` function | ``teacher.fullName`` | This attribute is mapped to a location in the model which contains an object which houses an ``in`` and/or ``out`` function. The ``in`` function is passed no arguments and is called when some of the watched data is changed. The ``in`` function should return the value which the element will be set to. The ``out`` function is passed an argument ``value`` which contains the value of the element. This function is called when the element changes its value. This function does not require a return value and should be used for setting data based on the elements value where appropriate. This attribute **should not** be used in conjuction with ``data-bindto`` and **should be** used with ``data-watching``.
 
 ##Browser Support
 Tested in Firefox, Chrome, and IE. Works in IE 9+.
