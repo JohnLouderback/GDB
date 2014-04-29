@@ -7,6 +7,16 @@ Generic Data Binder (GDB) for jQuery is a framework agnostic and extremely easy 
 GDB is a simple to use, zero configuration (unless you want to), template engine and framework agnostic little plugin. Drop it in and initialize it. It just works. Updates to the model automagically update the view and changes in the view automagically update the model.
 Finally, a plugin that allows for bi-directional live bindings between your view and model without the need to learn a hefty framework or change your current work flow.
 
+##The GDB Advantage
+* Works on all element types including ``contenteditable`` elements.
+* Works with very complex models, even circular structures.
+* Template engine agnostic. Use your favorite client side template engine. Don't compromise.
+* Framework agnostic. Use a framework? Don't use a framework? Doesn't matter. GDB will seemlessly integrate in either situation.
+* Can update in realtime. Not just ``onkeyup``, but as you type it. Works with context menu options such as cut, paste, and delete.
+* Currently 10.032 kb minified.
+* Updates to elements, immediately update the model.
+* Updates to the model, immediately update the bound and watching elements.
+
 ##Example Useage
 ###HTML or Template File
 ```html
