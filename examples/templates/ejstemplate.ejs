@@ -1,0 +1,21 @@
+<table class="table table-striped table-bordered table-responsive">
+    <thead>
+    <tr>
+        <td>First Name</td>
+        <td>Last Name</td>
+        <td>Full Name</td>
+    </tr>
+    </thead>
+    <% people.forEach(function(p,i1){%>
+    <tr>
+        <td><input class="form-control" data-bindto="people[<%=i1%>].firstName" value="<%=people[i1].firstName %>"></td>
+        <td><input class="form-control" data-bindto="people[<%=i1%>].lastName" value="<%=people[i1].lastName %>"></td>
+        <td data-watching="people[<%=i1%>].lastName,people[<%=i1%>].firstName" data-parsewith="people[<%=i1%>].fullName"><%=people[i1].fullName.in() %></td>
+    </tr>
+    <% }); %>
+    <tr>
+        <td colspan="4">
+            <button id="addRowBtn" class="btn btn-default">Add Row</button>
+        </td>
+    </tr>
+</table>
