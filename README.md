@@ -17,7 +17,7 @@ Finally, a plugin that allows for bi-directional live bindings between your view
 * Updates to elements, immediately update the model.
 * Updates to the model, immediately update the bound and watching elements.
 
-##Example Useage
+##Example Usage
 ###HTML or Template File
 ```html
 <span data-bindto="teacher.name" contenteditable="true" > Ms. Trunchbull </span>
@@ -49,6 +49,7 @@ Property | Type | Default Value | Description
 ---------|------|---------------|------------
 rootElementSelectorString | string | ``"body"`` | This property specifies what the root element is for whose children are monitored for changes and should be updated in realtime. Default is the body element, but specifying another element may be useful if using multiple instances of GDB for multiple templates.
 realtime | boolean | ``true`` | This property specifies whether or not to update the model with changes as the user makes them. Such as: if the user is typing into an input, textarea, or contenteditable field the model will be updated with everything key press and alteration. If this value is set to ``false`` then the model will only be updated when the bound field loses focus.
+renderOnInitialization | boolean | ``true`` | This property specifies if upon initialization GDB should set element values to be equal to values initalially in the model. If you are using a template engine, it may be faster to use the template engine to set these values, albeit this feature is more convenient.
 dataBindToAttr | string | ``"data-bindto"`` | This property specifies the name of the attribute which contains the mapping to the location in the model to which a given element's data is bound. Changing this property's value may be useful in the event that there is a conflict with using the ``data-bindto`` attribute.
 dataWatchingAttr | string | ``"data-watching"`` | This property specifies the name of the attribute used for specifying a comma separated list of locations in the model for which this element should react to changes to. Changes are reactived to with a data parsing function as mapped by the attribute specified by the ``dataParseWithAttr`` property.
 dataParseWithAttr | string | ``"data-parsewith"`` | This property specifies the name of the attribute used for specifying a location in the model from where an object containing an "in" and/or "out" function exists. This object's "in" or "out" function will be called if the model or element changes respectively.
@@ -65,6 +66,7 @@ Method | Returns | Description
 GDB.getBoundElementFromModelPath( ``pathString`` ) | ``jQuery`` Bound elements | Given a path to a location to the model, this method will return all elements bound to (via the ``data-bindto`` attribute).
 GDB.getModelPathFromBoundElement( ``selectorString`` ) | ``string`` Model path | Given either a DOM element (not a jQuery collection) or a selector string, this method will return a path to which the given element is bound to via the ``data-bindto`` attribute.
 GDB.getValueFromModelPath( ``pathString`` ) | ``any type`` Value from model | Given a path to a location to the model, this method will return the value location at that position in the model.
+GDB.render() | Nothing | This method explicitly sets all current elements in the DOM's values to the current values in the model. This may be useful after significantly changing the DOM. If you are using a template engine for rendering, it may be faster to use the template engine to set these values, albeit this feature is more convenient. This method is not necessary for changes in the model.
 
 ##Element Attributes
 Attribute Default Name | Expected Value(s) | Example Value | Description

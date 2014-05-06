@@ -38,7 +38,7 @@
 &lt;/table&gt;
         </code></pre>
         <h3>JavaScript</h3>
-        <pre><code id="jsCode">    $(function(){
+        <pre><code id="jsCode">$(function(){
     var template='...'//template code can be seen above...
     var mustache = Handlebars.compile(template);
     var Person=function(firstName,lastName){
@@ -49,9 +49,9 @@
             in: function () {
                 var lastName = Person.lastName;
                 if (lastName.length > 0)
-                lastName = " " + lastName;
+                    lastName = " " + lastName;
                 else
-                lastName = "";
+                    lastName = "";
                 return Person.firstName + lastName;
             }
         }

@@ -32,6 +32,7 @@
                 templateOpeningDelimiter: '<<',
                 templateClosingDelimiter: '>>',
                 realtime: true,
+                renderOnInitialization: true,
                 dataBindToAttr: 'data-bindto',
                 dataWatchingAttr: 'data-watching',
                 dataBindToTemplateAttr: 'data-bindto-template',
@@ -67,6 +68,8 @@
 
             GDB.getValueFromModelPath = function (path) {//Function for returning a property in a watched model's value given a model path
                 var modelValue = $.extend(true, {}, modelsToMonitor);// a copy of the orginal watched models
+                if(typeof path==="undefined")//if path is not a value
+                    return;
                 path = path.replace(/\[(\w+)\]/g, '.$1'); // convert indexes to properties
                 path = path.replace(/^\./, '');           // strip a leading dot
                 var array = path.split('.');
@@ -80,6 +83,75 @@
                 }
                 return modelValue;
             };
+
+            GDB.render = function(){
+                var selector="[" + options.dataBindToAttr + "],[" + options.dataWatchingAttr+"]";
+                $(selector).each(function(){
+                    setElementsToValue($(this),GDB.getValueFromModelPath($(this).attr(options.dataBindToAttr)));
+                });
+            };
+
+            //PRIVATE METHODS
+            var setElementsToValue=function($element,value){
+                $element.each(function () {//loop through each item
+
+                    if ($(this).is("[" + options.dataWatchingAttr + "][" + options.dataParseWithAttr + "]")) {//If this element is watching locations in the model and has a data parsing function
+                        var newValue = eval("modelsToMonitor." + $(this).attr(options.dataParseWithAttr) + ".in()");
+                    }
+                    else {//Otherwise, make sure the new value is set back to the correct value
+                        newValue = value;//change.object[change.name];
+                    }
+
+                    if ($(this).is('input,select,textarea')) { //If element is a form element
+                        if ($(this).is(':checkbox'))//if this form element is checkbox
+                        {
+                            $element.each(function () {//For each of these checkbox elements
+                                var $this = $(this);
+                                var isValue = false;//variable for checking whether or not this element is among checked values
+                                newValue.forEach(function (newValue) {//compare the value of this element against each value in the array of values
+                                    if ($this.val() == newValue) {//if the value of this element is equal to a value in the array
+                                        if (!$this.is(':checked'))//and the element is not already checked
+                                            $this.prop('checked', true);//check the element
+                                        isValue = true;//if this element is equal to a value in the array, set this variable to true
+                                    }
+                                });
+                                if (!isValue)//if it has been determined that this element is equal to no value in the array,
+                                    $this.prop('checked', false);//remove any potential check marks.
+                            });
+                        }
+                        else if ($(this).is(':radio')) {//else, if this is a radio box
+                            $element.each(function () {//For each of these radio elements
+                                var $this = $(this);
+                                if ($this.attr('value') == newValue)//if the value of this element is equal to the changed value
+                                    $this.prop('checked', true);//check the radio box in question
+                                else//Otherwise, if this is not equal to the new value, remove the checked attribute
+                                    $this.prop('checked', false);//remove any potential check marks.
+                            });
+
+                        }
+                        else {//Otherwise...
+                            if ($(this).val() != newValue)
+                                $(this).val(newValue);//set the value of the bound element
+                        }
+
+                    }
+                    else {
+                        if (!options.bindAsTextOnly) {//if we're not binding as text only
+                            if ($(this).html() != newValue)
+                                $(this).html(newValue);//set the html of the bound element
+                        }
+                        else { //Otherwise...
+                            if ($(this).text() != newValue)
+                                $(this).text(newValue);//set the text of the bound element
+                        }
+                    }
+
+                });
+            };
+
+            //FURTHER INITIALIZATION
+            if(options.renderOnInitialization)
+                GDB.render();
 
             //EVENT LISTENERS
             var listenForEvents = (options.realtime ? (GDB.helpers.isEventSupported('input') ? 'input' : 'keyup') + ' paste ' : '') + ' change blur';//listen for events based on whether we're updating in realtime or just as changes are committed.
@@ -181,73 +253,19 @@
                                 var elementSelector = "[" + options.dataBindToAttr + "='" + modelPath + "'],[" + options.dataWatchingAttr+"*='" + modelPath + ",'],[" + options.dataWatchingAttr+"$='" + modelPath + "']";
                                 var newValue = change.object[change.name];
                                 var oldValue = change.type;
+                                var $element=$(elementSelector);
 
                                 if (typeof newValue === 'object' || //If the new value is an object
                                     newValue instanceof Array) { //or an array
                                     observeObjects(value, thisLocation, previousObjects);//Observe this object or array and all of its obserable children.
                                 }
 
-                                $(elementSelector).each(function () {//loop through each item
-
-                                    if($(this).is("["+options.dataWatchingAttr+"]["+options.dataParseWithAttr+"]")){//If this element is watching locations in the model and has a data parsing function
-                                        newValue=eval("modelsToMonitor."+$(this).attr(options.dataParseWithAttr)+".in()");
-                                    }
-                                    else{//Otherwise, make sure the new value is set back to the correct value
-                                        newValue=change.object[change.name];
-                                    }
-                                    console.log(newValue);
-
-                                    if ($(this).is('input,select,textarea')) { //If element is a form element
-                                        if ($(this).is(':checkbox'))//if this form element is checkbox
-                                        {
-                                            $(elementSelector).each(function () {//For each of these checkbox elements
-                                                var $this = $(this);
-                                                var isValue = false;//variable for checking whether or not this element is among checked values
-                                                newValue.forEach(function (newValue) {//compare the value of this element against each value in the array of values
-                                                    if ($this.val() == newValue) {//if the value of this element is equal to a value in the array
-                                                        if (!$this.is(':checked'))//and the element is not already checked
-                                                            $this.attr('checked', 'checked');//check the element
-                                                        isValue = true;//if this element is equal to a value in the array, set this variable to true
-                                                    }
-                                                });
-                                                if (!isValue)//if it has been determined that this element is equal to no value in the array,
-                                                    $this.removeAttr('checked');//remove any potential check marks.
-                                            });
-                                        }
-                                        else if ($(this).is(':radio')) {//else, if this is a radio box
-                                            $(elementSelector).each(function () {//For each of these radio elements
-                                                var $this = $(this);
-                                                if ($this.val() == newValue)//if the value of this element is equal to the changed value
-                                                    $this.attr('checked', 'checked');//check the radio box in question
-                                                else {//Otherwise, if this is not equal to the new value, remove the checked attribute
-                                                    $this.removeAttr('checked');//remove any potential check marks.
-                                                }
-                                            });
-
-                                        }
-                                        else {//Otherwise...
-                                            if ($(this).val() != newValue)
-                                                $(this).val(newValue);//set the value of the bound element
-                                        }
-
-                                    }
-                                    else {
-                                        if (!options.bindAsTextOnly) {//if we're not binding as text only
-                                            if ($(this).html() != newValue)
-                                                $(this).html(newValue);//set the html of the bound element
-                                        }
-                                        else { //Otherwise...
-                                            if ($(this).text() != newValue)
-                                                $(this).text(newValue);//set the text of the bound element
-                                        }
-                                    }
-
-                                });
+                                setElementsToValue($element,newValue);
 
                                 if ($.isArray(newValue))//If the new value is an array
                                     var logValue = JSON.stringify(newValue);//set the logging value as a stringified array
                                 else//Otherwise...
-                                    var logValue = "'" + newValue + "'";//display as a quoted string.
+                                    logValue = "'" + newValue + "'";//display as a quoted string.
 
                                 if (options.debugLogging)
                                     console.log(thisLocation + key + " is now equal to " + logValue + " as observed in the model.");
@@ -257,7 +275,7 @@
                                         console.log("Model change callback executed for change in " + thisLocation + key);//show log information
                                     options.modelChangeCallback({
                                         locationPathString: modelPath, //the location in the model as a string
-                                        $boundElements: $(elementSelector), //the bound elements as a jquery collection
+                                        $boundElements: $element, //the bound elements as a jquery collection
                                         newValue: newValue, //the new value of the property
                                         oldValue: oldValue //the old value of the property
                                     });//run it now.

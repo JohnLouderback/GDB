@@ -113,12 +113,6 @@ $('body').on('click','#addRowBtn',function(){
 
         var $htmlDiv=$('#htmlDiv');
 
-        var timeoutFunction=(function(){
-            return setTimeout(function(){
-
-            });
-        }());
-
         GDB({people: model},{
             modelChangeCallback: function(){
                 $('pre code#model').text(JSON.stringify(model, null, '    '));
