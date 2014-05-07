@@ -24,6 +24,9 @@
                     }
                     el = null;
                     return isSupported;
+                },
+                escapeForRegEx: function(str) {
+                    return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
                 }
             };
 
@@ -35,7 +38,7 @@
                 renderOnInitialization: true,
                 dataBindToAttr: 'data-bindto',
                 dataWatchingAttr: 'data-watching',
-                dataBindToTemplateAttr: 'data-bindto-template',
+                dataTemplateAttr: 'data-gdb-template',
                 dataParseWithAttr: 'data-parsewith',
                 bindAsTextOnly: false,
                 insertPolyfills: true,
@@ -95,12 +98,19 @@
             var setElementsToValue=function($element,value){
                 $element.each(function () {//loop through each item
 
-                    if ($(this).is("[" + options.dataWatchingAttr + "][" + options.dataParseWithAttr + "]")) {//If this element is watching locations in the model and has a data parsing function
+                    if ($(this).is("[" + options.dataWatchingAttr + "][" + options.dataParseWithAttr + "]")) //If this element is watching locations in the model and has a data parsing function
                         var newValue = eval("modelsToMonitor." + $(this).attr(options.dataParseWithAttr) + ".in()");
+
+                    else if ($(this).is("[" + options.dataWatchingAttr + "][" + options.dataTemplateAttr + "]")) {//If this element is watching locations in the model and has a gdb template
+                        var modelLocations=$(this).attr(options.dataWatchingAttr).split(",");
+                        var template=$(this).attr(options.dataTemplateAttr);
+                        modelLocations.forEach(function(location,index){
+                            template=template.replace(new RegExp(GDB.helpers.escapeForRegEx(options.templateOpeningDelimiter)+(index+1)+GDB.helpers.escapeForRegEx(options.templateClosingDelimiter),"g"),GDB.getValueFromModelPath(location.trim()));
+                        });
+                        newValue = template;
                     }
-                    else {//Otherwise, make sure the new value is set back to the correct value
+                    else //Otherwise, make sure the new value is set back to the correct value
                         newValue = value;//change.object[change.name];
-                    }
 
                     if ($(this).is('input,select,textarea')) { //If element is a form element
                         if ($(this).is(':checkbox'))//if this form element is checkbox
@@ -130,19 +140,25 @@
 
                         }
                         else {//Otherwise...
-                            if ($(this).val() != newValue)
-                                $(this).val(newValue);//set the value of the bound element
+                            if (!$(this).is("[" + options.dataWatchingAttr + "][" + options.dataTemplateAttr + "]:focus")){//Do not update the value if this a template based field with focus
+                                if ($(this).val() != newValue)
+                                    $(this).val(newValue);//set the value of the bound element
+                            }
                         }
 
                     }
                     else {
                         if (!options.bindAsTextOnly) {//if we're not binding as text only
-                            if ($(this).html() != newValue)
-                                $(this).html(newValue);//set the html of the bound element
+                            if (!$(this).is("[" + options.dataWatchingAttr + "][" + options.dataTemplateAttr + "]:focus")) {//Do not update the value if this a template based field with focus
+                                if ($(this).html() != newValue)
+                                    $(this).html(newValue);//set the html of the bound element
+                            }
                         }
                         else { //Otherwise...
-                            if ($(this).text() != newValue)
-                                $(this).text(newValue);//set the text of the bound element
+                            if (!$(this).is("[" + options.dataWatchingAttr + "][" + options.dataTemplateAttr + "]:focus")) {//Do not update the value if this a template based field with focus
+                                if ($(this).text() != newValue)
+                                    $(this).text(newValue);//set the text of the bound element
+                            }
                         }
                     }
 
@@ -157,10 +173,10 @@
             var listenForEvents = (options.realtime ? (GDB.helpers.isEventSupported('input') ? 'input' : 'keyup') + ' paste ' : '') + ' change blur';//listen for events based on whether we're updating in realtime or just as changes are committed.
 
             //LISTEN FOR CHANGES TO ELEMENTS IN THE VIEW
-            $(options.rootElementSelectorString).on(listenForEvents, '[' + options.dataBindToAttr + '],[' + options.dataBindToTemplateAttr + '],['+options.dataParseWithAttr+']', function (e) {
+            $(options.rootElementSelectorString).on(listenForEvents, '[' + options.dataBindToAttr + '],[' + options.dataTemplateAttr + '],['+options.dataParseWithAttr+']', function (e) {
                 var $this = $(this);
                 var value = "";
-                if ($this.is('[' + options.dataBindToAttr + '],['+options.dataParseWithAttr+']')) {//If this element is bound to a location on the data model or has a parsing function
+                if ($this.is('[' + options.dataBindToAttr + '],['+options.dataParseWithAttr+'],['+options.dataTemplateAttr+']')) {//If this element is bound to a location on the data model or has a parsing function
 
                     var modelLocation = $this.attr(options.dataBindToAttr);//get the location in the in the model the element is bound to
 
@@ -181,15 +197,44 @@
                     else //Otherwise...
                         value = options.bindAsTextOnly ? $this.text() : $this.html();//get the text or html of the element depending on the options set.
 
+                    var rawValue=value;//the value before sanitizing it.
+
                     if (!$.isArray(value))//If the value is not an array
                         value = "'" + value.replace(/'/g, "\\'").replace(/\n/g, '\\n') + "'";//escape new line and single quotes
                     else
                         value = JSON.stringify(value);
+
                     if(modelLocation)
                         eval("modelsToMonitor." + modelLocation + "=" + value);//evaluate the path in the model to which the data is bound.
 
                     if($this.is("["+options.dataParseWithAttr+"]"))//If this has a data parsing function
                         eval("modelsToMonitor."+$this.attr(options.dataParseWithAttr)+".out("+value+")");
+
+                    if ($this.is("[" + options.dataWatchingAttr + "][" + options.dataTemplateAttr + "]")) {//If this element is watching locations in the model and has a gdb template
+                        var splitBys=$(this).attr(options.dataTemplateAttr).split(new RegExp(GDB.helpers.escapeForRegEx(options.templateOpeningDelimiter)+"\\d+"+GDB.helpers.escapeForRegEx(options.templateClosingDelimiter),"g"));//Create an array of indexes which will be used in a regular expression to decipher where template information is stored
+                        splitBys.forEach(function(item, i){//loop through split bys
+                            if(item==="")
+                                splitBys.splice(i,1);
+                            else
+                                splitBys[i]=GDB.helpers.escapeForRegEx(item);//escape value for regex usage.
+                        });
+                        var modelLocationValuesArray=[];//An array for mapping data in the template to locations in the model
+                        var valueArray=rawValue.split(new RegExp(splitBys.join("|"), "g"));
+                        var indexArray=$(this).attr(options.dataTemplateAttr).split(new RegExp(splitBys.join("|"), "g"));
+                        var modelLocations=$(this).attr(options.dataWatchingAttr).split(",");
+                        indexArray.forEach(function(value,i){
+                            var index=(value.replace(new RegExp(GDB.helpers.escapeForRegEx(options.templateOpeningDelimiter)+"|"+GDB.helpers.escapeForRegEx(options.templateClosingDelimiter),"g"), "")-1);
+                            modelLocationValuesArray.push({
+                                location: modelLocations[index].trim(),
+                                value: typeof valueArray[i] === "undefined" ? '""' : JSON.stringify(valueArray[i])
+                            });
+                        });
+                        console.log(splitBys);
+                        modelLocationValuesArray.forEach(function(modelLocationAndValue){
+                            console.log("modelsToMonitor." + modelLocationAndValue.location + "=" + modelLocationAndValue.value);
+                            eval("modelsToMonitor." + modelLocationAndValue.location + "=" + modelLocationAndValue.value);//evaluate the path in the model to which the data is bound.
+                        });
+                    }
 
                     if (options.debugLogging)
                         console.log(modelLocation + " is now equal to " + value + " as per changes made in the view as witnessed by the \"" + e.type + "\" event.");

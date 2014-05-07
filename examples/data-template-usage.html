@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
 <head>
-    <title>Generic Data Binder Data Parsing Functions</title>
+    <title>Generic Data Binder Data Template</title>
     <link rel="stylesheet" href="http://bootswatch.com/slate/bootstrap.min.css">
     <link rel="stylesheet" href="http://yandex.st/highlightjs/8.0/styles/pojoaque.min.css">
     <style>pre{background-color:#7a8288;border:1px solid #7a8288}html::-webkit-scrollbar{width:5px}html::-webkit-scrollbar-track{background-color:rgba(0,0,0,.31);-webkit-border-radius:5px}html::-webkit-scrollbar-thumb:vertical{margin:5px;background-color:#464646;border:1px solid #595959;-webkit-border-radius:5px}html::-webkit-scrollbar-button:end:increment,html::-webkit-scrollbar-button:start:decrement{height:5px;display:block}</style>
@@ -10,11 +10,11 @@
 <body style="margin:20px;">
 
     <div class="col-md-6">
-        <h2>GDB Data Parsing Functions</h2>
+        <h2>GDB Data Template Example 1</h2>
         <div id="htmlDiv">
             <div class="form-group">
                 <label for="fullName">First &amp; Last Name</label>
-                <input  data-watching="teacher.firstName,teacher.lastName" data-parsewith="teacher.fullName" type="text" class="form-control" id="fullName">
+                <input  data-watching="teacher.firstName,teacher.lastName" data-gdb-template="<<1>> <<2>>" type="text" class="form-control" id="fullName">
             </div>
             <div class="form-group">
                 <label for="firstName">First Name</label>
@@ -26,6 +26,8 @@
             </div>
         </div>
         Edit the text above!
+        <h2>GDB Template</h2>
+        <pre><code id="template"><<1>> <<2>></code></pre>
     </div>
 
     <div class="col-md-6">
@@ -37,58 +39,23 @@
         <h3>JavaScript</h3>
         <pre><code id="jsCode">var model={
     firstName: "Agatha",
-    lastName: "Trunchbull",
-    fullName: {
-        in: function(){
-            var lastName=model.lastName;
-            if(lastName.length>0)
-                lastName=" "+lastName;
-            else
-                lastName="";
-            return model.firstName+lastName;
-        },
-        out: function(value){
-            var nameArr=value.split(" ");
-            model.firstName=nameArr[0];
-            if(nameArr.length>1)
-                model.lastName=nameArr[1];
-            else
-                model.lastName="";
-        }
-    }
+    lastName: "Trunchbull"
 };
 GDB({teacher: model});</code></pre>
     </div>
 
 
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
-<script src="../jquery.gdb.min.js?v1.2.1"></script>
+<script src="../jquery.gdb.min.js?v1.2.2"></script>
 <script>
     hljs.initHighlightingOnLoad();//Just for the demo's syntax highlighting
     $(function(){
         var model={
             firstName: "Agatha",
-            lastName: "Trunchbull",
-            fullName: {
-                in: function(){
-                    var lastName=model.lastName;
-                    if(lastName.length>0)
-                        lastName=" "+lastName;
-                    else
-                        lastName="";
-                    return model.firstName+lastName;
-                },
-                out: function(value){
-                    var nameArr=value.split(" ");
-                    model.firstName=nameArr[0];
-                    if(nameArr.length>1)
-                        model.lastName=nameArr[1];
-                    else
-                        model.lastName="";
-                }
-            }
+            lastName: "Trunchbull"
         };
         GDB({teacher: model},{
+            debugLogging: true,
             modelChangeCallback: function(e){
                 $('pre code#model').text(JSON.stringify(model, null, '    '));
                 $('#htmlCode').text($('#htmlDiv').html().trim());

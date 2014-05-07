@@ -1,0 +1,93 @@
+<!doctype html>
+<html>
+<head>
+    <title>Generic Data Binder Data Template 3</title>
+    <link rel="stylesheet" href="http://bootswatch.com/slate/bootstrap.min.css">
+    <link rel="stylesheet" href="http://yandex.st/highlightjs/8.0/styles/pojoaque.min.css">
+    <style>pre{background-color:#7a8288;border:1px solid #7a8288}html::-webkit-scrollbar{width:5px}html::-webkit-scrollbar-track{background-color:rgba(0,0,0,.31);-webkit-border-radius:5px}html::-webkit-scrollbar-thumb:vertical{margin:5px;background-color:#464646;border:1px solid #595959;-webkit-border-radius:5px}html::-webkit-scrollbar-button:end:increment,html::-webkit-scrollbar-button:start:decrement{height:5px;display:block}</style>
+    <script src="http://yandex.st/highlightjs/8.0/highlight.min.js"></script>
+</head>
+<body style="margin:20px;">
+
+    <div class="col-md-6">
+        <h2>GDB Data Template Example 3</h2>
+        <div id="htmlDiv">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="name">Your Name</label>
+                    <input  data-bindto="person.name" type="text" class="form-control" id="name">
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="car">Donation Amount</label>
+                    <div class="input-group">
+                        <span class="input-group-addon">$</span>
+                        <input  data-bindto="person.donation.wholeDollar" type="number" class="form-control" id="dollars" min="0">
+                        <span class="input-group-addon">.</span>
+                        <input  data-bindto="person.donation.cents" type="number" class="form-control" id="cents" min="00" max="99">
+                    </div>
+                </div>
+            </div>
+            <h3 data-watching="person.name, person.donation.wholeDollar, person.donation.cents" data-gdb-template="<<1>> would like to donate $<<2>>.<<3>>"></h3>
+        </div>
+        Edit the text above!
+        <h2>GDB Template</h2>
+        <pre><code id="template"><<1>> would like to donate $<<2>>.<<3>></code></pre>
+        <b>Note: </b>GDB has taken a lot of my time to develop. If you love it, please consider donating what you think it's worth to you.<br>
+        Thanks!<br>
+        <button id="donateBtn" class="btn btn-default">Want to really donate this amount?</button>
+
+    </div>
+
+    <div class="col-md-6">
+        <h2>Model Data Structure</h2>
+        (<b>Note:</b> Because model updates are in realtime and the syntax highlighter is processor intensive, rapid input may slow this example. This behavior is not present in the production use of the plugin)
+        <pre><code id="model"></code></pre>
+        <h3>HTML</h3>
+        <pre><code id="htmlCode"></code></pre>
+        <h3>JavaScript</h3>
+        <pre><code id="jsCode">var model={
+        name: "John",
+        donation: {
+            wholeDollar: 0,
+            cents: "00"
+        }
+    };
+GDB({person: model});</code></pre>
+    </div>
+
+
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+<script src="../jquery.gdb.min.js?v1.2.2"></script>
+<script>
+    hljs.initHighlightingOnLoad();//Just for the demo's syntax highlighting
+    $(function(){
+        var model={
+            name: "John",
+            donation: {
+                wholeDollar: "0",
+                cents: "00"
+            }
+        };
+        var amount="0.00";
+        GDB({person: model},{
+            debugLogging: true,
+            modelChangeCallback: function(e){
+                $('pre code#model').text(JSON.stringify(model, null, '    '));
+                $('#htmlCode').text($('#htmlDiv').html().trim());
+                $('pre code').each(function(i,e){hljs.highlightBlock(e);});
+            }
+        });
+        $('pre code#model').text(JSON.stringify(model, null, '    '));
+        $('#htmlCode').text($('#htmlDiv').html().trim());
+
+        $('#donateBtn').click(function(){
+            var url="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=john@johnlouderback.com&amount="+amount+"&lc=US&item_name=Generic%20Data%20Binder&currency_code=USD&bn=PP-DonationsBF:btn_donate_LG.gif:NonHosted";
+            window.open(url, '_blank').focus();
+        });
+
+    });
+</script>
+</body>
+</html>

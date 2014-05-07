@@ -1,4 +1,4 @@
-Generic Data Binder v1.2.1 [<img src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif">](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=john@johnlouderback.com&lc=US&item_name=Generic%20Data%20Binder&currency_code=USD&bn=PP-DonationsBF:btn_donate_LG.gif:NonHosted)
+Generic Data Binder v1.2.2 [<img src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif">](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=john@johnlouderback.com&lc=US&item_name=Generic%20Data%20Binder&currency_code=USD&bn=PP-DonationsBF:btn_donate_LG.gif:NonHosted)
 ===
 ##About GDB
 Generic Data Binder (GDB) for jQuery is a framework agnostic and extremely easy to use 2 way data binder. GDB binds views and models in realtime with live two-way binding and no hefty framework necessary.
@@ -72,7 +72,7 @@ GDB.render() | Nothing | This method explicitly sets all current elements in the
 Attribute Default Name | Expected Value(s) | Example Value | Description
 -----------------------|-------------------|---------------|------------
 data-bindto | A single path to a location in the model | ``teacher.name`` or ``teachers[6].students[0].name`` | This attribute is mapped to a location in the model to which the element is bound. Changes to this element are reflected in the model and changes in the model are reflected in this element. This attribute **should not** be used in conjuction with ``data-watching`` or ``data-parsewith``.
-data-watching | A comma separated list of one or more locations in the model | ``teacher.firstName``, ``teacher.firstName,teacher.lastName``, ``teacher[3].students[4].grade``, or ``teacher[3].students[4].grade, teacher[3].students[4].firstName, teacher[3].students[4].lastName`` | This attribute is mapped to one or more locations in the model separated by commas. If any of these properties in the model change, the element's ``data-parsewith`` attribute's object's ``in`` function is called. If this element is changed, the element's ``data-parsewith`` attribute's object's ``out`` function is called. This attribute **should not** be used in conjuction with ``data-bindto`` and **should be** used with ``data-parsewith``.
+data-watching | A comma separated list of one or more locations in the model | ``teacher.firstName``, ``teacher.firstName,teacher.lastName``, ``teacher[3].students[4].grade``, or ``teacher[3].students[4].grade, teacher[3].students[4].firstName, teacher[3].students[4].lastName`` | This attribute is mapped to one or more locations in the model separated by commas. If any of these properties in the model change, the element's ``data-parsewith`` attribute's object's ``in`` function is called. If this element is changed, the element's ``data-parsewith`` attribute's object's ``out`` function is called. This attribute **should not** be used in conjuction with ``data-bindto`` and **should be** used with ``data-parsewith``. **Note:** This attribute's value **should not** have a trailing space. You may, however, have a space after each comma, if you desire.
 data-parsewith | A single path a location in the model of an object containing an ``in`` and/or ``out`` function | ``teacher.fullName`` or ``teacher[22].students[2].fullName`` | This attribute is mapped to a location in the model which contains an object which houses an ``in`` and/or ``out`` function. The ``in`` function is passed no arguments and is called when some of the watched data is changed. The ``in`` function should return the value which the element will be set to. The ``out`` function is passed an argument ``value`` which contains the value of the element. This function is called when the element changes its value. This function does not require a return value and should be used for setting data based on the elements value where appropriate. This attribute **should not** be used in conjuction with ``data-bindto`` and **should be** used with ``data-watching``.
 
 ##Browser Support
@@ -80,7 +80,7 @@ Tested in Firefox, Chrome, and IE. Works in IE 9+.
 
 ##TODO
 - [ ] Acheive better performance
-- [ ] Add simple templating functionality
+- [x] Add simple templating functionality
 - [x] Add ability to add data parsing functions
 - [x] Add more and better examples
 - [ ] Create pure JavaScript version if there is an interest
