@@ -25,7 +25,7 @@
                         <span class="input-group-addon">$</span>
                         <input  data-bindto="person.donation.wholeDollar" type="number" class="form-control" id="dollars" min="0">
                         <span class="input-group-addon">.</span>
-                        <input  data-bindto="person.donation.cents" type="number" class="form-control" id="cents" min="00" max="99">
+                        <input  data-bindto="person.donation.cents" type="number" class="form-control" id="cents" min="-01" max="100">
                     </div>
                 </div>
             </div>
@@ -69,6 +69,20 @@ GDB({person: model});</code></pre>
                 $(this).val("0"+value);
             if(value.length>2 && value.substr(0,1)=="0")
                 $(this).val(value.substring(1, value.length));
+            if(value=="100"){
+                $(this).val("00");
+                $('#dollars').val((parseInt($('#dollars').val())+1)+"");
+                $('#dollars').change();
+            }
+            if(parseInt(value)==-1){
+                $(this).val("99");
+                if(parseInt($('#dollars').val())>0){
+                    $('#dollars').val((parseInt($('#dollars').val())-1)+"");
+                    $('#dollars').change();
+                }
+
+            }
+
         });
 
         var model={
@@ -80,7 +94,6 @@ GDB({person: model});</code></pre>
         };
         var amount="0.00";
         GDB({person: model},{
-            debugLogging: true,
             modelChangeCallback: function(e){
                 $('pre code#model').text(JSON.stringify(model, null, '    '));
                 $('#htmlCode').text($('#htmlDiv').html().trim());
