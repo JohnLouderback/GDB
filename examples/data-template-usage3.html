@@ -67,6 +67,8 @@ GDB({person: model});</code></pre>
             var value=$(this).val();
             if(value.length<2)
                 $(this).val("0"+value);
+            if(value.length>2 && value.substr(0,1)=="0")
+                $(this).val(value.substring(1, value.length));
         });
 
         var model={
