@@ -63,6 +63,12 @@ GDB({person: model});</code></pre>
 <script>
     hljs.initHighlightingOnLoad();//Just for the demo's syntax highlighting
     $(function(){
+        $('#cents').on('input',function(){
+            var value=$(this).val();
+            if(value.length<2)
+                $(this).val("0"+value);
+        });
+
         var model={
             name: "John",
             donation: {
