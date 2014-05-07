@@ -77,6 +77,7 @@ GDB({person: model});</code></pre>
                 $('pre code#model').text(JSON.stringify(model, null, '    '));
                 $('#htmlCode').text($('#htmlDiv').html().trim());
                 $('pre code').each(function(i,e){hljs.highlightBlock(e);});
+                amount=model.donation.wholeDollar+"."+model.donation.cents;
             }
         });
         $('pre code#model').text(JSON.stringify(model, null, '    '));
