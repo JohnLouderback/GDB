@@ -212,24 +212,31 @@
 
                     if ($this.is("[" + options.dataWatchingAttr + "][" + options.dataTemplateAttr + "]")) {//If this element is watching locations in the model and has a gdb template
                         var splitBys=$(this).attr(options.dataTemplateAttr).split(new RegExp(GDB.helpers.escapeForRegEx(options.templateOpeningDelimiter)+"\\d+"+GDB.helpers.escapeForRegEx(options.templateClosingDelimiter),"g"));//Create an array of indexes which will be used in a regular expression to decipher where template information is stored
-                        splitBys.forEach(function(item, i){//loop through split bys
-                            if(item==="")
-                                splitBys.splice(i,1);
+                        var toDelete=[];
+                        splitBys.forEach(function(item,i){//loop through split bys
+                            if(item.length===0)
+                                toDelete.push(i);
                             else
                                 splitBys[i]=GDB.helpers.escapeForRegEx(item);//escape value for regex usage.
                         });
+                        var subtract=0;
+                        toDelete.forEach(function(index){
+                            splitBys.splice(parseInt(index)-subtract, 1);
+                            subtract++;
+                        });
+
                         var modelLocationValuesArray=[];//An array for mapping data in the template to locations in the model
                         var valueArray=rawValue.split(new RegExp(splitBys.join("|"), "g"));
                         var indexArray=$(this).attr(options.dataTemplateAttr).split(new RegExp(splitBys.join("|"), "g"));
                         var modelLocations=$(this).attr(options.dataWatchingAttr).split(",");
+
                         indexArray.forEach(function(value,i){
-                            var index=(value.replace(new RegExp(GDB.helpers.escapeForRegEx(options.templateOpeningDelimiter)+"|"+GDB.helpers.escapeForRegEx(options.templateClosingDelimiter),"g"), "")-1);
+                            var index=(parseInt(value.replace(new RegExp(GDB.helpers.escapeForRegEx(options.templateOpeningDelimiter)+"|"+GDB.helpers.escapeForRegEx(options.templateClosingDelimiter),"g"), ""))-1);
                             modelLocationValuesArray.push({
                                 location: modelLocations[index].trim(),
                                 value: typeof valueArray[i] === "undefined" ? '""' : JSON.stringify(valueArray[i])
                             });
                         });
-                        console.log(splitBys);
                         modelLocationValuesArray.forEach(function(modelLocationAndValue){
                             console.log("modelsToMonitor." + modelLocationAndValue.location + "=" + modelLocationAndValue.value);
                             eval("modelsToMonitor." + modelLocationAndValue.location + "=" + modelLocationAndValue.value);//evaluate the path in the model to which the data is bound.
