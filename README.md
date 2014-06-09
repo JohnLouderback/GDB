@@ -65,7 +65,8 @@ elementChangeCallback | function or null | ``null`` | This property may be set t
 
 All User Options are entirely optional.
 
-##Public Methods
+##Public Instance Methods
+Must be used only in GDB instances. Cannot be used statically.
 Method | Returns | Description
 -------|---------|------------
 GDB.getBoundElementFromModelPath( ``pathString`` ) | ``jQuery`` Bound elements | Given a path to a location to the model, this method will return all elements bound to (via the ``data-bindto`` attribute).
