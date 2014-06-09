@@ -1,4 +1,4 @@
-Generic Data Binder v1.2.2 [<img src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif">](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=john@johnlouderback.com&lc=US&item_name=Generic%20Data%20Binder&currency_code=USD&bn=PP-DonationsBF:btn_donate_LG.gif:NonHosted)
+Generic Data Binder v1.3.0 [<img src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif">](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=john@johnlouderback.com&lc=US&item_name=Generic%20Data%20Binder&currency_code=USD&bn=PP-DonationsBF:btn_donate_LG.gif:NonHosted)
 ===
 ##About GDB
 Generic Data Binder (GDB) for jQuery is a framework agnostic and extremely easy to use 2 way data binder. GDB binds views and models in realtime with live two-way binding and no hefty framework necessary.
@@ -74,6 +74,7 @@ GDB.getValueFromModelPath( ``pathString`` ) | ``any type`` Value from model | Gi
 GDB.render() | Nothing | This method explicitly sets all current elements in the DOM's values to the current values in the model. This may be useful after significantly changing the DOM. If you are using a template engine for rendering, it may be faster to use the template engine to set these values, albeit this feature is more convenient. This method is not necessary for changes in the model.
 GDB.getModelPathFromModelPart( ``modelPartObject`` ) | ``string`` Model path | Given an object or array in the model, this method will return a model path location string.
 GDB.getBoundElementsForModelPart( ``modelPartObject`` ) | ``jQuery`` Bound elements | Given an object or array in the model, this method will return any element who have data bound to any properties of this object.
+GDB.destroyInstance() | Nothing | Stops model observing and event listening, effectively destroying the instance.
 
 ##Element Attributes
 Attribute Default Name | Expected Value(s) | Example Value | Description
