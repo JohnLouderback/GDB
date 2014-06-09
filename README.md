@@ -66,7 +66,6 @@ elementChangeCallback | function or null | ``null`` | This property may be set t
 All User Options are entirely optional.
 
 ##Public Instance Methods
-Must be used only in GDB instances. These cannot be used statically.
 Method | Returns | Description
 -------|---------|------------
 GDB.getBoundElementFromModelPath( ``pathString`` ) | ``jQuery`` Bound elements | Given a path to a location to the model, this method will return all elements bound to (via the ``data-bindto`` attribute).
@@ -76,6 +75,8 @@ GDB.render() | Nothing | This method explicitly sets all current elements in the
 GDB.getModelPathFromModelPart( ``modelPartObject`` ) | ``string`` Model path | Given an object or array in the model, this method will return a model path location string.
 GDB.getBoundElementsForModelPart( ``modelPartObject`` ) | ``jQuery`` Bound elements | Given an object or array in the model, this method will return any element who have data bound to any properties of this object.
 GDB.destroyInstance() | Nothing | Stops model observing and event listening, effectively destroying the instance.
+
+Must be used only in GDB instances. These cannot be used statically.
 
 ##Element Attributes
 Attribute Default Name | Expected Value(s) | Example Value | Description
