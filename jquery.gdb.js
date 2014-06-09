@@ -2,11 +2,18 @@
     var gdbFactory=function(jQuery)
     {
         var $ = jQuery;
+        var instanceID=0;
         var GDB = function (modelsToMonitorObject, userOptionsObject) {//GDB Object constructor
+
 
             //INITIALIZATION CODE
             var GDB = this;
-
+            GDB.id=instanceID;
+            instanceID++;
+            var listenForEvents;//Definition for variable which hold the list of events to listen for, for event binding
+            var observeObjects;//Definition for function which is used to observe or unobserve object behavior
+            var witnessedObjects={};//Object for storing location keys for every witnessed array or object
+            GDB.witnessedObjects=witnessedObjects;
             //HELPERS
             GDB.helpers = {
                 isEventSupported: function (eventName) {
@@ -27,6 +34,10 @@
                 },
                 escapeForRegEx: function(str) {
                     return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
+                },
+                isElement: function (o){
+                    return (typeof HTMLElement === "object" ? o instanceof HTMLElement : //DOM2
+                            o && typeof o === "object" && o !== null && o.nodeType === 1 && typeof o.nodeName==="string");
                 }
             };
 
@@ -40,6 +51,8 @@
                 dataWatchingAttr: 'data-watching',
                 dataTemplateAttr: 'data-gdb-template',
                 dataParseWithAttr: 'data-parsewith',
+                dataBindOnAttrPrefix: 'data-bindon-',
+                listenForEvents:'click dblclick change input keydown mouseover mouseout keypress keyup mousedown mouseup focus blur',
                 bindAsTextOnly: false,
                 insertPolyfills: true,
                 debugLogging: false,
@@ -56,9 +69,10 @@
 
             var modelsToMonitor = modelsToMonitorObject;//Models to watch
 
-            //PUBLIC METHODS
+            //PUBLIC INSTANCE METHODS
             GDB.getBoundElementFromModelPath = function (path) { //Function for getting bound elements as jquery collection given a model path
-                return $('[' + options.dataBindToAttr + '=' + path + ']');
+                //TODO: Enhance this so that it can also handle event bindings and not just data bindings
+                return $('[' + options.dataBindToAttr + '="' + path + '"]');
             };
 
             GDB.getModelPathFromBoundElement = function (selector) {//Function for getting a model path for a bound element given an DOM node or selector string
@@ -87,14 +101,52 @@
                 return modelValue;
             };
 
-            GDB.render = function(){
-                var selector="[" + options.dataBindToAttr + "],[" + options.dataWatchingAttr+"]";
+            GDB.getModelPathFromModelPart=function(modelPartObject){//Function for returning a model path location given an object or array in the model, that is: a part of the model
+                var modelPath=null;
+                $.each(witnessedObjects, function(modelPathLocation, value){
+                    if(value===modelPartObject){
+                        modelPath=modelPathLocation;
+                        return false;
+                    }
+                });
+                return modelPath;
+            };
+
+            GDB.getBoundElementsForModelPart=function(modelPartObject){
+                //TODO: Enhance this so that it can also handle event bindings and not just data bindings
+                var path=GDB.getModelPathFromModelPart(modelPartObject);
+                return $('[' + options.dataBindToAttr + '^="' + path + '"]').filter(function(){
+                    var attrValue=$(this).attr(options.dataBindToAttr);
+                    var parent=attrValue.replace(/\[(\w+)\]/g, '.$1'); // convert indexes to properties
+                    var parentLocationArr=parent.split('.');
+                    parentLocationArr.pop();
+                    parent=parentLocationArr.join(".");
+                    if(parent==path)
+                        return true;
+                });
+            };
+
+            GDB.render = function(){//Set bound elements to their bound data on call.
+                var selector=options.rootElementSelectorString+" [" + options.dataBindToAttr + "],[" + options.dataWatchingAttr+"]";
                 $(selector).each(function(){
                     setElementsToValue($(this),GDB.getValueFromModelPath($(this).attr(options.dataBindToAttr)));
                 });
             };
 
+            GDB.destroyInstance = function(){//Function for destroying a GDB instance by removing event listeners and unobserving models assocaited with this instance.
+                $(options.rootElementSelectorString).off(setEventsToNamespaced(listenForEvents+" "+options.listenForEvents));
+                observeObjects(true, modelsToMonitor);
+            };
+
             //PRIVATE METHODS
+            var setEventsToNamespaced=function(eventsString){
+                var splitEvents=eventsString.split(" ");
+                splitEvents.forEach(function(item,i){
+                    splitEvents[i]=item+".gdbInstance"+GDB.id;
+                });
+                return splitEvents.join(" ");
+            };
+
             var setElementsToValue=function($element,value){
                 $element.each(function () {//loop through each item
 
@@ -170,10 +222,10 @@
                 GDB.render();
 
             //EVENT LISTENERS
-            var listenForEvents = (options.realtime ? (GDB.helpers.isEventSupported('input') ? 'input' : 'keyup') + ' paste ' : '') + ' change blur';//listen for events based on whether we're updating in realtime or just as changes are committed.
+            listenForEvents = (options.realtime ? (GDB.helpers.isEventSupported('input') ? 'input' : 'keyup') + ' paste ' : '') + ' change blur';//listen for events based on whether we're updating in realtime or just as changes are committed.
 
             //LISTEN FOR CHANGES TO ELEMENTS IN THE VIEW
-            $(options.rootElementSelectorString).on(listenForEvents, '[' + options.dataBindToAttr + '],[' + options.dataTemplateAttr + '],['+options.dataParseWithAttr+']', function (e) {
+            $(options.rootElementSelectorString).on(setEventsToNamespaced(listenForEvents), '[' + options.dataBindToAttr + '],[' + options.dataTemplateAttr + '],['+options.dataParseWithAttr+']', function (e) {
                 var $this = $(this);
                 var value = "";
                 if ($this.is('[' + options.dataBindToAttr + '],['+options.dataParseWithAttr+'],['+options.dataTemplateAttr+']')) {//If this element is bound to a location on the data model or has a parsing function
@@ -263,8 +315,52 @@
                 }
             });
 
+            //LISTEN FOR EVENTS ON EVENT BOUND ELEMENTS
+            var elementsToWatch=(function(){//Set the elements to watch from the result of the follow function
+                var listOfAttributes="";//variable for storing a comma separated list of attribute selectors
+                options.listenForEvents.split(" ").forEach(function(eventName){//split the list of events to listen for
+                     listOfAttributes+="["+options.dataBindOnAttrPrefix+eventName+"],";//assemble our selector string
+                });
+                return listOfAttributes.substring(0, listOfAttributes.length - 1);//return it, minus the trailing comma
+            }());
+            //The events listeners for event bound elements
+            $(options.rootElementSelectorString).on(setEventsToNamespaced(options.listenForEvents), elementsToWatch, function (e) {
+                var functionLocation=$(this).attr(options.dataBindOnAttrPrefix + e.type);//Combine the event data attribute prefix and the fired event's type to get the value from the bound attribute.
+
+                if(functionLocation){
+                    //Augment the event object with a property which is equal to the bound data that the model location represents
+                    e.gdbBoundData=$(this).attr(options.dataBindToAttr) ? eval("modelsToMonitor."+$(this).attr(options.dataBindToAttr)) : null;
+                    //Augment the event object with a property which is an array equal to the objects that the model locations represent
+                    e.gdbWatchingData=(function(){
+                        if($(this).attr(options.dataWatchingAttr)){
+                            var watchingArr=[];
+                            $(this).attr(options.dataWatchingAttr).split(",").forEach(function(modelLocation){
+                                watchingArr.push(eval("modelsToMonitor."+modelLocation.trim()));
+                            });
+                            return watchingArr;
+                        }
+                        else
+                            return null;
+                    }());
+                    //Augment the event object with a property which is the object or array to which this event function belongs.
+                    e.gdbParent=(function(){
+                        var parent=functionLocation.replace(/\[(\w+)\]/g, '.$1'); // convert indexes to properties
+                        var parentLocationArr=parent.split('.');
+                        parentLocationArr.pop();
+                        parent=parentLocationArr.join(".");
+                        return GDB.getValueFromModelPath(parent);
+                    }());
+
+
+                    eval("modelsToMonitor." + functionLocation + ".apply(this, [e]);");//evaluate the path in the model in where the function exists and apply it.
+                }
+
+            });
+
             //LOOP THROUGH ALL SUPPLIED MODELS AND RECURSIVELY OBSERVE OBJECTS WITHIN OBJECTS
-            var observeObjects = function (objectToObserve, objectLocationString, previousObjects) {
+            var observerFunctions={};//Object containing properties whose name matches the locations in the watched model and whose values are equal to the observer functions.
+            observeObjects = function (unobserve, objectToObserve, objectLocationString, previousObjects) {
+                var observationAction = unobserve ? 'unobserve' : 'observe';//Variable used to decide which function is called depending on whether we're observing or unobserving.
 
                 previousObjects = previousObjects || [];//array of previously observed objects. We keep this to prevent redundant observation in circular structures
 
@@ -274,6 +370,7 @@
                     if ((value !== null && //check if value is not null
                         (typeof value === 'object' || //and it is an object
                         value instanceof Array)) && //or an array
+                        !GDB.helpers.isElement(value) && //and also not a DOM element
                         function () { //finally check that this object is not reference to a previously observed object
                             var wasNotSeen = true;
                             previousObjects.forEach(function (object) {
@@ -296,8 +393,10 @@
                                 thisLocation = objectLocationString + "." + key;
                         }
 
+                        witnessedObjects[thisLocation]=value;//Add this object or array to the witnessedObjects object which contains a mapping of locations to object or arrays
+
                         //OBSERVE CHANGES IN MODEL'S DATASTRUCTURE TO REFLECT
-                        Object.observe(value, function (changes) {
+                        var changeHandlerFunction= observerFunctions[thisLocation+key] ? observerFunctions[thisLocation+key] : function (changes) {
                             changes.forEach(function (change) {//For every change in the object...
 
                                 var key = !isNaN(change.name) ? '[' + change.name + ']' : '.' + change.name; //set key based on whether the key is an array index or object property.
@@ -309,7 +408,7 @@
 
                                 if (typeof newValue === 'object' || //If the new value is an object
                                     newValue instanceof Array) { //or an array
-                                    observeObjects(value, thisLocation, previousObjects);//Observe this object or array and all of its obserable children.
+                                    observeObjects(unobserve, value, thisLocation, previousObjects);//Observe this object or array and all of its obserable children.
                                 }
 
                                 setElementsToValue($element,newValue);
@@ -339,16 +438,19 @@
 
                             });
 
-                        });
+                        };
+                        if(!observerFunctions[thisLocation+key])//if the function for this location is not stored...
+                            observerFunctions[thisLocation+key]=changeHandlerFunction;//...store it
+                        Object[observationAction](value,changeHandlerFunction);//use this function for handling model changes
 
-                        observeObjects(value, thisLocation, previousObjects);
+                        observeObjects(unobserve, value, thisLocation, previousObjects);//recursively observe this object or array.
 
                     }
                 });
             };
 
             //OBSERVE THE MODELS
-            observeObjects(modelsToMonitor);
+            observeObjects(false, modelsToMonitor);
 
         };
 

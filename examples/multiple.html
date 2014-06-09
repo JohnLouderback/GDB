@@ -1,0 +1,74 @@
+<!doctype html>
+<html>
+<head>
+    <title>Generic Data Binder Simplest Example</title>
+    <link rel="stylesheet" href="http://bootswatch.com/slate/bootstrap.min.css">
+    <link rel="stylesheet" href="http://yandex.st/highlightjs/8.0/styles/pojoaque.min.css">
+    <style>pre{background-color:#7a8288;border:1px solid #7a8288}html::-webkit-scrollbar{width:5px}html::-webkit-scrollbar-track{background-color:rgba(0,0,0,.31);-webkit-border-radius:5px}html::-webkit-scrollbar-thumb:vertical{margin:5px;background-color:#464646;border:1px solid #595959;-webkit-border-radius:5px}html::-webkit-scrollbar-button:end:increment,html::-webkit-scrollbar-button:start:decrement{height:5px;display:block}</style>
+    <script src="http://yandex.st/highlightjs/8.0/highlight.min.js"></script>
+</head>
+<body style="margin:20px;">
+
+    <div class="col-md-6">
+        <h2>GDB Multiple Instances Example</h2>
+        <div id="htmlDiv">
+<div id="widget1" class="form-group">
+    <input class="form-control" type="text" data-bindto="login.name">
+</div>
+<div id="widget2" class="form-group">
+    <input class="form-control" type="text" data-bindto="page.title">
+</div>
+
+        </div>
+        Edit the text above!
+    </div>
+
+    <div class="col-md-6">
+        <h2>Model Data Structure</h2>
+        (<b>Note:</b> Because model updates are in realtime and the syntax highlighter is processor intensive, rapid input may slow this example. This behavior is not present in the production use of the plugin)
+        <h3>GDB1 Model</h3>
+        <pre><code id="model"></code></pre>
+        <h3>GDB2 Model</h3>
+        <pre><code id="model2"></code></pre>
+        <h3>HTML</h3>
+        <pre><code id="htmlCode"></code></pre>
+        <h3>JavaScript</h3>
+        <pre><code id="jsCode">var model = { name: 'Neville' };
+var page_model = { title: '' };
+var gdb1=new GDB({login: model},{rootElementSelectorString: '#widget1'});
+var gdb2=new GDB({page: page_model},{rootElementSelectorString: '#widget2'});
+</code></pre>
+    </div>
+
+
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+<script src="../jquery.gdb.min.js?v1.2.3"></script>
+<script>
+    hljs.initHighlightingOnLoad();//Just for the demo's syntax highlighting
+    $(function(){
+
+        var model = { name: 'Neville' };
+        var page_model = { title: '' };
+        var gdb1=new GDB({login: model},{rootElementSelectorString: '#widget1',
+            modelChangeCallback: function(e){
+                $('pre code#model').text(JSON.stringify(model, null, '    '));
+                $('#htmlCode').text($('#htmlDiv').html().trim());
+                $('pre code').each(function(i,e){hljs.highlightBlock(e);});
+            }
+        });
+        var gdb2=new GDB({page: page_model},{rootElementSelectorString: '#widget2',
+            modelChangeCallback: function(e){
+                $('pre code#model2').text(JSON.stringify(page_model, null, '    '));
+                $('#htmlCode').text($('#htmlDiv').html().trim());
+                $('pre code').each(function(i,e){hljs.highlightBlock(e);});
+            }
+        });
+
+
+        $('pre code#model').text(JSON.stringify(model, null, '    '));
+        $('pre code#model2').text(JSON.stringify(page_model, null, '    '));
+        $('#htmlCode').text($('#htmlDiv').html().trim());
+    });
+</script>
+</body>
+</html>

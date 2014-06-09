@@ -1,0 +1,162 @@
+<!doctype html>
+<html>
+<head>
+    <title>Generic Data Binder Simplest Example</title>
+    <link rel="stylesheet" href="http://bootswatch.com/slate/bootstrap.min.css">
+    <link rel="stylesheet" href="http://yandex.st/highlightjs/8.0/styles/pojoaque.min.css">
+    <style>pre{background-color:#7a8288;border:1px solid #7a8288}html::-webkit-scrollbar{width:5px}html::-webkit-scrollbar-track{background-color:rgba(0,0,0,.31);-webkit-border-radius:5px}html::-webkit-scrollbar-thumb:vertical{margin:5px;background-color:#464646;border:1px solid #595959;-webkit-border-radius:5px}html::-webkit-scrollbar-button:end:increment,html::-webkit-scrollbar-button:start:decrement{height:5px;display:block}</style>
+    <script src="http://yandex.st/highlightjs/8.0/highlight.min.js"></script>
+</head>
+<body style="margin:20px;">
+
+    <div class="col-md-6">
+        <h2>Handlebars/Mustache Templating Example</h2>
+        <div id="htmlDiv">
+
+        </div>
+        <h3>Handlebars Template</h3>
+        <pre><code id="templateCode">&lt;table class="table table-striped table-bordered table-responsive"&gt;
+    &lt;thead&gt;
+        &lt;tr&gt;
+            &lt;td&gt;First Name&lt;/td&gt;
+            &lt;td&gt;Last Name&lt;/td&gt;
+            &lt;td&gt;Full Name&lt;/td&gt;
+        &lt;/tr&gt;
+    &lt;/thead&gt;
+    {{#people}}
+    &lt;tr&gt;
+        &lt;td&gt;&lt;input class="form-control" data-bindto="people[{{@index}}].firstName" value="{{firstName}}"&gt;&lt;/td&gt;
+        &lt;td&gt;&lt;input class="form-control" data-bindto="people[{{@index}}].lastName" value="{{lastName}}"&gt;&lt;/td&gt;
+        &lt;td data-watching="people[{{@index}}].lastName,people[{{@index}}].firstName" data-parsewith="people[{{@index}}].fullName"&gt;{{fullName.in}}&lt;/td&gt;
+    &lt;/tr&gt;
+    {{/people}}
+    &lt;tr&gt;
+        &lt;td colspan="4"&gt;
+            &lt;button id="addRowBtn" class="btn btn-default"&gt;Add Row&lt;/button&gt;
+        &lt;/td&gt;
+    &lt;/tr&gt;
+&lt;/table&gt;
+        </code></pre>
+        <h3>JavaScript</h3>
+        <pre><code id="jsCode">$(function(){
+    var template='...'//template code can be seen above...
+    var mustache = Handlebars.compile(template);
+    var Person=function(firstName,lastName){
+        var Person=this;
+        Person.firstName=firstName;
+        Person.lastName=lastName;
+        Person.fullName={
+            in: function () {
+                var lastName = Person.lastName;
+                if (lastName.length > 0)
+                    lastName = " " + lastName;
+                else
+                    lastName = "";
+                return Person.firstName + lastName;
+            }
+        }
+    };
+    var model=[
+    new Person("Agatha", "Trunchbull"),
+    new Person("Jennifer", "Honey"),
+    new Person("Matilda", "Wormwood")
+    ];
+
+    var $htmlDiv=$('#htmlDiv');
+    }());
+
+    GDB({people: model});
+    $('pre code#model').text(JSON.stringify(model, null, '    '));
+    $htmlDiv.html(mustache({people: model}));
+    $('#htmlCode').text($htmlDiv.html().trim());
+
+    $('body').on('click','#addRowBtn',function(){
+        model.push(new Person("", ""));
+        $htmlDiv.html(mustache({people: model}));
+    });
+
+});</code></pre>
+    </div>
+
+    <div class="col-md-6">
+        <h2>Model Data Structure</h2>
+        (<b>Note:</b> Because model updates are in realtime and the syntax highlighter is processor intensive, rapid input may slow this example. This behavior is not present in the production use of the plugin)
+        <pre><code class="hljs" id="model"></code></pre>
+        <h3>HTML</h3>
+        <pre><code id="htmlCode"></code></pre>
+
+    </div>
+
+
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+<script src="http://gdb.thewebdev.guru/js/mustache.js"></script>
+<script src="../jquery.gdb.min.js?v1.2.1"></script>
+<script>
+    hljs.initHighlightingOnLoad();//Just for the demo's syntax highlighting
+    $(function(){
+        var template='<table class="table table-striped table-bordered table-responsive">\n\
+    <thead>\n\
+        <tr>\n\
+            <td>First Name</td>\n\
+            <td>Last Name</td>\n\
+            <td>Full Name</td>\n\
+        </tr>\n\
+    </thead>\n\
+    {{#people}}\
+    <tr>\n\
+        <td><input class="form-control" data-bindto="people[{{@index}}].firstName" value="{{firstName}}"></td>\n\
+        <td><input class="form-control" data-bindto="people[{{@index}}].lastName" value="{{lastName}}"></td>\n\
+        <td data-watching="people[{{@index}}].lastName,people[{{@index}}].firstName" data-parsewith="people[{{@index}}].fullName">{{fullName.in}}</td>\n\
+    </tr>\n\
+    {{/people}}\
+    <tr>\n\
+        <td colspan="4">\n\
+            <button id="addRowBtn" class="btn btn-default">Add Row</button>\n\
+        </td>\n\
+    </tr>\n\
+</table>\
+        ';
+        var mustache = Handlebars.compile(template);
+        var People=function(){
+            var People=this;
+            People.people=[];
+
+
+
+            return People;
+        }();
+        var Person=function(firstName,lastName,parent){
+            var Person=this;
+            Person.parent=parent;
+            Person.firstName=firstName;
+            Person.lastName=lastName;
+            Person.favoriteThings=[];
+        };
+        var model=[
+            new Person("Agatha", "Trunchbull"),
+            new Person("Jennifer", "Honey"),
+            new Person("Matilda", "Wormwood")
+        ];
+
+        var $htmlDiv=$('#htmlDiv');
+
+        GDB({people: model},{
+            modelChangeCallback: function(){
+                $('pre code#model').text(JSON.stringify(model, null, '    '));
+                $('#htmlCode').text($htmlDiv.html().trim());
+                $('pre code').each(function(i,e){hljs.highlightBlock(e);});
+            }
+        });
+        $('pre code#model').text(JSON.stringify(model, null, '    '));
+        $htmlDiv.html(mustache({people: model}));
+        $('#htmlCode').text($htmlDiv.html().trim());
+
+        $('body').on('click','#addRowBtn',function(){
+            model.push(new Person("", ""));
+            $htmlDiv.html(mustache({people: model}));
+        });
+
+    });
+</script>
+</body>
+</html>
