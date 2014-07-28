@@ -1,7 +1,7 @@
 (function(){//Anonymous function for namespacing
     var gdbFactory=function(jQuery)
     {
-        var $ = jQuery;
+        var $ = jQuery || window.jQuery;
         var instanceID=0;
         var GDB = function (modelsToMonitorObject, userOptionsObject) {//GDB Object constructor
 
@@ -42,7 +42,8 @@
             };
 
             var options = {
-                rootElementSelectorString: 'body',
+                rootElementSelectorString: null,//Deprecated for rootElement
+                rootElement: 'body',
                 templateOpeningDelimiter: '<<',
                 templateClosingDelimiter: '>>',
                 realtime: true,
@@ -66,6 +67,27 @@
             //ADD POLYFILLS WHERE APPLICABLE
             if (options.insertPolyfills === true)
                 loadPolyFills();
+
+            if (options.rootElementSelectorString === null) {
+                (function(){
+                    var el_get = function( el ){
+                        if ( typeof el === "string" )
+                            el = ( document ).querySelector( el );
+                        else
+                        if ( isjQuery_el( el ) )
+                            el = el.get(0);
+                        return el;
+                    };
+
+                    // Returns true if $el is a jQuery element.
+                    var isjQuery_el = function( $el ){
+                        return $el instanceof jQuery;
+                    };
+
+                    options.rootElementSelectorString = el_get(options.rootElement);
+
+                }());
+            }
 
             var modelsToMonitor = modelsToMonitorObject;//Models to watch
 
@@ -799,6 +821,9 @@
         define( "gdb", ["jquery"], function(jquery) {
             return gdbFactory(jquery);
         });
+    }
+    else if (typeof exports === 'object') {
+        module.exports = gdbFactory(require('jquery'));
     }
     else{//Normal Browser Support
         jQuery(function(){
