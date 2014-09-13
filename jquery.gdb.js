@@ -149,8 +149,8 @@
             };
 
             GDB.render = function(){//Set bound elements to their bound data on call.
-                var selector=options.rootElementSelectorString+" [" + options.dataBindToAttr + "],[" + options.dataWatchingAttr+"]";
-                $(selector).each(function(){
+                var $selector=$(options.rootElementSelectorString).find("[" + options.dataBindToAttr + "],[" + options.dataWatchingAttr+"]");
+                $selector.each(function(){
                     setElementsToValue($(this),GDB.getValueFromModelPath($(this).attr(options.dataBindToAttr)));
                 });
             };
