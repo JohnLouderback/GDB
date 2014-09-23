@@ -274,7 +274,7 @@
                     var rawValue=value;//the value before sanitizing it.
 
                     if (!$.isArray(value))//If the value is not an array
-                        value = "'" + value.replace(/'/g, "\\'").replace(/\n/g, '\\n') + "'";//escape new line and single quotes
+                        value = "'" + value.replace(/\\/g, "\\\\").replace(/'/g, "\\'").replace(/\n/g, '\\n') + "'";//escape backslash, new line and single quotes
                     else
                         value = JSON.stringify(value);
 
