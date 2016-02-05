@@ -7,7 +7,7 @@
 
 
             //INITIALIZATION CODE
-            var GDB = this;
+            var GDB = this || {};
             GDB.id=instanceID;
             instanceID++;
             var listenForEvents;//Definition for variable which hold the list of events to listen for, for event binding
