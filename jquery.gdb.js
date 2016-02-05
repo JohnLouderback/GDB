@@ -7,7 +7,7 @@
 
 
             //INITIALIZATION CODE
-            var GDB = this;
+            var GDB = this || {};
             GDB.id=instanceID;
             instanceID++;
             var listenForEvents;//Definition for variable which hold the list of events to listen for, for event binding
@@ -326,7 +326,7 @@
                         options.elementChangeCallback({
                             locationPathString: modelLocation, //the location in the model as a string
                             $boundElement: $this, //the element changed as a jquery object
-                            newValue: options.bindAsTextOnly ? $this.text() : $this.html()//the new value of the element
+                            newValue: rawValue//the new value of the element
                         });//run it now.
                     }
                     else {
@@ -425,7 +425,7 @@
                                 var modelPath=thisLocation+key;
                                 var elementSelector = "[" + options.dataBindToAttr + "='" + modelPath + "'],[" + options.dataWatchingAttr+"*='" + modelPath + ",'],[" + options.dataWatchingAttr+"$='" + modelPath + "']";
                                 var newValue = change.object[change.name];
-                                var oldValue = change.type;
+                                var oldValue = change.oldValue;
                                 var $element=$(elementSelector);
 
                                 if (typeof newValue === 'object' || //If the new value is an object
