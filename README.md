@@ -1,13 +1,13 @@
 Generic Data Binder v1.3.0 [<img src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif">](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=john@johnlouderback.com&lc=US&item_name=Generic%20Data%20Binder&currency_code=USD&bn=PP-DonationsBF:btn_donate_LG.gif:NonHosted)
 ===
-##About GDB
+## About GDB
 Generic Data Binder (GDB) for jQuery is a framework agnostic and extremely easy to use 2 way data binder. GDB binds views and models in realtime with live two-way binding and no hefty framework necessary.
 
-##Why Use GDB?
+## Why Use GDB?
 GDB is a simple to use, zero configuration (unless you want to), template engine and framework agnostic little plugin. Drop it in and initialize it. It just works. Updates to the model automagically update the view and changes in the view automagically update the model.
 Finally, a plugin that allows for bi-directional live bindings between your view and model without the need to learn a hefty framework or change your current work flow.
 
-##The GDB Advantage
+## The GDB Advantage
 * Works on all element types including ``contenteditable`` elements.
 * Works with very complex models, even circular structures.
 * Template engine agnostic. Use your favorite client side template engine. Don't compromise.
@@ -17,14 +17,14 @@ Finally, a plugin that allows for bi-directional live bindings between your view
 * Updates to elements, immediately update the model.
 * Updates to the model, immediately update the bound and watching elements.
 
-##Example Usage
-###HTML or Template File
+## Example Usage
+### HTML or Template File
 ```html
 <span data-bindto="teacher.name" contenteditable="true" > Ms. Trunchbull </span>
 ```
 
 Use the "data-bindto" attribute in your templates or static HTML file and map the attribute to the location in the data model where the bound data exists. The format must be such that array indexes are specified in bracket notation (ie. "[0]") and object properties are written in dot notation (ie. ".propertyName"). Specifying object properties in backet notation (ie. "['propertyName']") will not work when the model is updated from within the code and so this is discouraged.
-###JavaScript
+### JavaScript
 ```javascript
 $(function(){ //GDB is only available once jQuery is ready.
   GDB({
@@ -44,7 +44,7 @@ The second parameter is an object containing user specified options.
 
 Using the example above the element bound to the model will update the model in realtime as the data in the element changes. Vice-versa is also true. When data in the data model is changed, the element will update accordingly automatically.
 
-##User Options
+## User Options
 Property | Type | Default Value | Description
 ---------|------|---------------|------------
 ~~rootElementSelectorString~~(Deprecated) | ~~string~~ | ~~``"body"``~~ ``null`` | ~~This property specifies what the root element is for whose children are monitored for changes and should be updated in realtime. Default is the body element, but specifying another element may be useful if using multiple instances of GDB for multiple templates.~~
@@ -66,7 +66,7 @@ elementChangeCallback | function or null | ``null`` | This property may be set t
 
 All User Options are entirely optional.
 
-##Public Instance Methods
+## Public Instance Methods
 Method | Returns | Description
 -------|---------|------------
 GDB.getBoundElementFromModelPath( ``pathString`` ) | ``jQuery`` Bound elements | Given a path to a location to the model, this method will return all elements bound to (via the ``data-bindto`` attribute).
@@ -79,7 +79,7 @@ GDB.destroyInstance() | Nothing | Stops model observing and event listening, eff
 
 Must be used only in GDB instances. These cannot be used statically.
 
-##Element Attributes
+## Element Attributes
 Attribute Default Name | Expected Value(s) | Example Value | Description
 -----------------------|-------------------|---------------|------------
 data-bindto | A single path to a location in the model | ``teacher.name`` or ``teachers[6].students[0].name`` | This attribute is mapped to a location in the model to which the element is bound. Changes to this element are reflected in the model and changes in the model are reflected in this element. This attribute **should not** be used in conjuction with ``data-watching`` or ``data-parsewith``.
@@ -88,10 +88,10 @@ data-watching | A comma separated list of one or more locations in the model | `
 data-parsewith | A single path a location in the model of an object containing an ``in`` and/or ``out`` function | ``teacher.fullName`` or ``teacher[22].students[2].fullName`` | This attribute is mapped to a location in the model which contains an object which houses an ``in`` and/or ``out`` function. The ``in`` function is passed no arguments and is called when some of the watched data is changed. The ``in`` function should return the value which the element will be set to. The ``out`` function is passed an argument ``value`` which contains the value of the element. This function is called when the element changes its value. This function does not require a return value and should be used for setting data based on the elements value where appropriate. This attribute **should not** be used in conjuction with ``data-bindto`` and **should be** used with ``data-watching``.
 data-gdb-template | A template composed of a mix of text and open and close delimiters containing a number. | ``<<1>> <<2>>`` or ``<<1>> likes to drink <<2>> with lots of <<3>>`` | This attribute is a very simple logicless template which can server as an alternative to a data parsing function. The number between the open and close delimiter should match the place number in the list of some data which is being watched. Templating is two-way, meaning if the templated element is edited from the element side in a way that matches the template, the template will update the model.
 
-##Browser Support
+## Browser Support
 Tested in Firefox, Chrome, and IE. Works in IE 9+.
 
-##TODO
+## TODO
 - [ ] Add CommonJS Support for Browserify
 - [ ] Add TypeScript definitions
 - [ ] Create complex use-case master example
@@ -104,7 +104,7 @@ Tested in Firefox, Chrome, and IE. Works in IE 9+.
 - [x] Upload initial stable release
 - [x] Upload initial beta version
 
-##Changelog
+## Changelog
 - v1.3 - 6/8/2014 - Added Generic Event Binding functionality, a few new useful public instance methods (including instance destruction), and three new examples.
 - v1.2 - 4/26/2014 - Added data parsing function abilities, new public methods, AMD support, and added more examples.
 - v1.0 - 3/29/2014 - Initial Stable Release. Fixed several minor bugs and added new callback function.
